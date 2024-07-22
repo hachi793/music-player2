@@ -1,0 +1,24 @@
+.menu li a {
+  text-decoration: none;
+}
+.profile {
+  position: absolute;
+  z-index: 1;
+  top: 40px;
+  right: 20px;
+  background-color: #323232;
+  list-style-type: none;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  width: 150px;
+}
+.profile a {
+  text-decoration: none;
+  color: rgb(150, 150, 150);
+}
+.profile a:hover {
+  color: white;
+  transition: 0.3s ease-in-out;
+}
+.change-page:hover {
+  color: white;
+}

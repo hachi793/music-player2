@@ -1,0 +1,34 @@
+.card-wrap .card:hover .delete-icon {
+  opacity: 1;
+}
+.delete-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50px;
+  overflow: hidden;
+  display: flex;
+  background: red;
+  position: relative;
+  margin-left: auto;
+  opacity: 0;
+  position: absolute;
+  right: 1.2rem;
+  bottom: 0.8rem;
+}
+.card-wrap .card:hover .update-icon {
+  opacity: 1;
+}
+.update-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50px;
+  overflow: hidden;
+  display: flex;
+  background: rgb(168, 164, 164);
+  position: relative;
+  margin-left: auto;
+  opacity: 0;
+  position: absolute;
+  right: 4.2rem;
+  bottom: 0.8rem;
+}

@@ -1,0 +1,10 @@
+.songcard {
+  cursor: pointer;
+  border-radius: 2px;
+  display: flex;
+  width: 100%;
+}
+.songcard:hover {
+  background-color: #363636;
+  transition: 0.3s ease-in-out;
+}

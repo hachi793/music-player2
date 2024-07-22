@@ -1,0 +1,13 @@
+.dashboard-menu a {
+  color: white;
+  text-decoration: none;
+  display: inline-block;
+  padding: 5px 15px;
+  margin-left: 20px;
+  background: #b3b3b3;
+  border-radius: 20px;
+}
+.dashboard-menu a:hover {
+  color: black;
+  transition: 0.3s ease-in-out;
+}
