@@ -14,6 +14,7 @@ import { actionType } from "../../context/reducer";
 import { MdDelete, MdOutlineFileUpload } from "react-icons/md";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import "../../styles/UpdateNewSong.css";
 
 const UploadNewSong = () => {
   const [songName, setSongName] = useState("");
@@ -75,35 +76,66 @@ const UploadNewSong = () => {
   };
 
   const saveSong = () => {
-    if (songImageCoverURL && songAudioURL) {
+    console.log({
+      songImageCoverURL,
+      songAudioURL,
+      songName,
+      artistFilter,
+      languageFilter,
+      filterTerm,
+    });
+
+    if (
+      songImageCoverURL &&
+      songAudioURL &&
+      songName &&
+      artistFilter &&
+      languageFilter &&
+      filterTerm
+    ) {
       setIsLoading(true);
       const data = {
         name: songName,
         imageURL: songImageCoverURL,
-        songURL: songAudioURL,
-        album: albumFilter,
-        artist: artistFilter,
+        artistId: artistFilter,
+        albumId: albumFilter,
         language: languageFilter,
         category: filterTerm,
       };
 
-      saveNewSong(data).then((res) => {
-        getAllSongs().then((songs) => {
+      saveNewSong(data)
+        .then((res) => {
+          if (res) {
+            getAllSongs().then((songs) => {
+              if (songs) {
+                dispatch({
+                  type: actionType.SET_ALL_SONGS,
+                  allSongs: songs,
+                });
+              } else {
+                console.error("Failed to fetch all songs");
+              }
+            });
+          } else {
+            console.error("Failed to save new song");
+          }
+        })
+        .finally(() => {
+          setIsLoading(false);
+          setSongName("");
+          setSongImageCover(null);
+          setSongAudio(null);
+          dispatch({ type: actionType.SET_ARTIST_FILTER, artistFilter: null });
           dispatch({
-            type: actionType.SET_ALL_SONGS,
-            allSongs: songs.song,
+            type: actionType.SET_LANGUAGE_FILTER,
+            languageFilter: null,
           });
+          dispatch({ type: actionType.SET_ALBUM_FILTER, albumFilter: null });
+          dispatch({ type: actionType.SET_FILTER_TERM, filterTerm: null });
+          navigate("/dashboard/songs");
         });
-      });
-      setIsLoading(false);
-      setSongName("");
-      setSongImageCover(null);
-      setSongAudio(null);
-      dispatch({ type: actionType.SET_ARTIST_FILTER, artistFilter: null });
-      dispatch({ type: actionType.SET_LANGUAGE_FILTER, languageFilter: null });
-      dispatch({ type: actionType.SET_ALBUM_FILTER, albumFilter: null });
-      dispatch({ type: actionType.SET_FILTER_TERM, filterTerm: null });
-      navigate("/dashboard/songs");
+    } else {
+      console.error("Required fields are missing");
     }
   };
 

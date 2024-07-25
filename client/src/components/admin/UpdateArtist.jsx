@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { storage } from "../../config/firebase.config";
 import { useStateValue } from "../../context/stateProvider";
-import { getAllAlbums, saveNewAlbum } from "../../api";
+import { getAllArtists, updateArtistById, getArtistById } from "../../api";
 import {
   deleteObject,
   getDownloadURL,
@@ -11,25 +11,44 @@ import {
 import { actionType } from "../../context/reducer";
 import { MdDelete, MdOutlineFileUpload } from "react-icons/md";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-const UploadNewAlbum = () => {
-  const [albumImageCover, setAlbumImageCover] = useState(null);
-  const [albumImageCoverURL, setAlbumImageCoverURL] = useState(null);
-  const [albumName, setAlbumName] = useState("");
-  const [albumDescript, setAlbumDescript] = useState("");
+const UpdateArtist = () => {
+  const { id } = useParams();
+  const [artistImageCover, setArtistImageCover] = useState(null);
+  const [artistImageCoverURL, setArtistImageCoverURL] = useState(null);
+  const [artistName, setArtistName] = useState("");
+  const [artistTwitter, setArtistTwitter] = useState("");
+  const [artistInstagram, setArtistInstagram] = useState("");
+  const [artistDescription, setArtistDescription] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
-  const [{ allAlbums }, dispatch] = useStateValue();
 
-  const uploadAlbumImage = (e) => {
-    const uploadedAlbumFile = e.target.files[0];
-    setAlbumImageCover(URL.createObjectURL(uploadedAlbumFile));
-    uploadFile(uploadedAlbumFile, setAlbumImageCoverURL);
+  const navigate = useNavigate();
+  const [{ allArtists }, dispatch] = useStateValue();
+
+  useEffect(() => {
+    const fetchArtist = async () => {
+      const artist = await getArtistById(id);
+      if (artist) {
+        setArtistName(artist.name);
+        setArtistImageCoverURL(artist.imageURL);
+        setArtistImageCover(artist.imageURL);
+        setArtistTwitter(artist.twitter);
+        setArtistInstagram(artist.instagram);
+        setArtistDescription(artist.description);
+      }
+    };
+    fetchArtist();
+  }, [id]);
+
+  const uploadArtistImage = (e) => {
+    const uploadedArtistFile = e.target.files[0];
+    setArtistImageCover(URL.createObjectURL(uploadedArtistFile));
+    uploadFile(uploadedArtistFile, setArtistImageCoverURL);
   };
 
   const uploadFile = (file, setFileURL) => {
-    const fileName = `image/album/${Date.now()}-${file.name}`;
+    const fileName = `image/artist/${Date.now()}-${file.name}`;
     const storageRef = ref(storage, fileName);
     const uploadTask = uploadBytesResumable(storageRef, file);
 
@@ -47,46 +66,44 @@ const UploadNewAlbum = () => {
     );
   };
 
-  const saveAlbum = () => {
-    if (albumName && albumImageCoverURL) {
+  const saveArtist = () => {
+    if (artistImageCoverURL && artistName) {
       setIsLoading(true);
+
       const data = {
-        title: albumName,
-        imageURL: albumImageCoverURL,
-        description: albumDescript,
-        artistId: "", // Add artistId if required
-        songs: [], // Add songs if required
+        name: artistName,
+        imageURL: artistImageCoverURL,
+        twitter: artistTwitter,
+        instagram: artistInstagram,
+        description: artistDescription,
       };
-      saveNewAlbum(data).then((res) => {
-        if (res) {
-          getAllAlbums().then((albums) => {
-            if (albums) {
-              dispatch({
-                type: actionType.SET_ALL_ALBUMS,
-                allAlbums: albums,
-              });
-            }
+
+      updateArtistById(id, data).then((res) => {
+        getAllArtists().then((artists) => {
+          dispatch({
+            type: actionType.SET_ALL_ARTISTS,
+            allArtists: artists,
           });
-          navigate("/dashboard/albums", { replace: true });
-        }
+        });
+        setIsLoading(false);
+        navigate("/dashboard/artists");
       });
-      setIsLoading(false);
     }
   };
 
   const deleteFileObject = () => {
-    if (albumImageCoverURL) {
-      const deleteRef = ref(storage, albumImageCoverURL);
+    if (artistImageCover && artistImageCoverURL) {
+      const deleteRef = ref(storage, artistImageCoverURL);
       deleteObject(deleteRef).then(() => {
-        setAlbumImageCover(null);
-        setAlbumImageCoverURL(null);
+        setArtistImageCover(null);
+        setArtistImageCoverURL(null);
       });
     }
   };
 
   return (
     <motion.div className="d-flex flex-column justify-content-center align-items-center p-4 w-100">
-      <p className="fw-semibold fs-5">New Album Details</p>
+      <p className="fw-semibold fs-5">Update Artist Details</p>
 
       <div className="w-100 d-flex">
         <div
@@ -98,12 +115,12 @@ const UploadNewAlbum = () => {
             cursor: "pointer",
           }}
         >
-          {albumImageCover ? (
+          {artistImageCover ? (
             <div className="position-relative w-100 h-100 overflow-hidden rounded-3">
               <img
-                src={albumImageCover}
+                src={artistImageCover}
                 className="w-100 h-100 object-fit-fill"
-                alt="Album Cover"
+                alt=""
               />
               <button
                 className="btn position-absolute rounded-circle border-0 bg-danger text-light fs-5"
@@ -115,31 +132,50 @@ const UploadNewAlbum = () => {
                   border: "none",
                   paddingBottom: "10px",
                 }}
-                onClick={() => deleteFileObject()}
+                onClick={deleteFileObject}
               >
                 <MdDelete className="text-light" />
               </button>
             </div>
           ) : (
-            <FileUploader onUpload={uploadAlbumImage} fileType="image" />
+            <FileUploader onUpload={uploadArtistImage} fileType="image" />
           )}
         </div>
         <div className="ms-3 w-50">
           <input
             type="text"
-            placeholder="Type new album name..."
+            placeholder="Type your artist name..."
             className="w-100 p-2 my-2 rounded-2 text-light"
             style={{ backgroundColor: "#323232", outline: "none" }}
-            value={albumName}
-            onChange={(e) => setAlbumName(e.target.value)}
+            value={artistName}
+            onChange={(e) => setArtistName(e.target.value)}
           />
+
           <input
             type="text"
-            placeholder="Some description about album..."
+            placeholder="Type artist twitter..."
+            className="w-100 p-2 my-2 rounded-2 text-light"
+            style={{ backgroundColor: "#323232", outline: "none" }}
+            value={artistTwitter}
+            onChange={(e) => setArtistTwitter(e.target.value)}
+          />
+
+          <input
+            type="text"
+            placeholder="Type artist instagram..."
+            className="w-100 p-2 my-2 rounded-2 text-light"
+            style={{ backgroundColor: "#323232", outline: "none" }}
+            value={artistInstagram}
+            onChange={(e) => setArtistInstagram(e.target.value)}
+          />
+
+          <input
+            type="text"
+            placeholder="Some description about artist..."
             className="w-100 h-50 p-2 my-2 rounded-2 text-light"
             style={{ backgroundColor: "#323232", outline: "none" }}
-            value={albumDescript}
-            onChange={(e) => setAlbumDescript(e.target.value)}
+            value={artistDescription}
+            onChange={(e) => setArtistDescription(e.target.value)}
           />
         </div>
       </div>
@@ -152,10 +188,10 @@ const UploadNewAlbum = () => {
             border: "none",
             outline: "none",
           }}
-          onClick={saveAlbum}
+          onClick={saveArtist}
           disabled={isLoading}
         >
-          {isLoading ? "Saving..." : "Save Album"}
+          {isLoading ? "Saving..." : "Update Artist"}
         </button>
       </div>
     </motion.div>
@@ -185,4 +221,4 @@ const FileUploader = ({ onUpload, fileType }) => {
   );
 };
 
-export default UploadNewAlbum;
+export default UpdateArtist;

@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { storage } from "../../config/firebase.config";
 import { useStateValue } from "../../context/stateProvider";
-import { getAllAlbums, saveNewAlbum } from "../../api";
+import { getAlbumById, updateAlbumById, getAllAlbums } from "../../api";
 import {
   deleteObject,
   getDownloadURL,
@@ -11,16 +11,34 @@ import {
 import { actionType } from "../../context/reducer";
 import { MdDelete, MdOutlineFileUpload } from "react-icons/md";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-const UploadNewAlbum = () => {
+const UpdateAlbum = () => {
+  const { id } = useParams();
+
   const [albumImageCover, setAlbumImageCover] = useState(null);
   const [albumImageCoverURL, setAlbumImageCoverURL] = useState(null);
   const [albumName, setAlbumName] = useState("");
-  const [albumDescript, setAlbumDescript] = useState("");
+  const [albumDescription, setAlbumDescription] = useState("");
+
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
   const [{ allAlbums }, dispatch] = useStateValue();
+
+  useEffect(() => {
+    const fetchAlbum = async () => {
+      const album = await getAlbumById(id);
+      console.log(album);
+      if (album) {
+        setAlbumName(album.title);
+        setAlbumImageCover(album.imageURL);
+        setAlbumImageCoverURL(album.imageURL);
+        setAlbumDescription(album.description);
+      }
+    };
+    fetchAlbum();
+  }, [id]);
 
   const uploadAlbumImage = (e) => {
     const uploadedAlbumFile = e.target.files[0];
@@ -48,34 +66,30 @@ const UploadNewAlbum = () => {
   };
 
   const saveAlbum = () => {
-    if (albumName && albumImageCoverURL) {
+    if (albumImageCover && albumName && albumDescription) {
       setIsLoading(true);
+
       const data = {
         title: albumName,
         imageURL: albumImageCoverURL,
-        description: albumDescript,
-        artistId: "", // Add artistId if required
-        songs: [], // Add songs if required
+        description: albumDescription,
       };
-      saveNewAlbum(data).then((res) => {
-        if (res) {
-          getAllAlbums().then((albums) => {
-            if (albums) {
-              dispatch({
-                type: actionType.SET_ALL_ALBUMS,
-                allAlbums: albums,
-              });
-            }
+
+      updateAlbumById(id, data).then((res) => {
+        getAllAlbums().then((albums) => {
+          dispatch({
+            type: actionType.SET_ALL_ALBUMS,
+            allAlbums: albums,
           });
-          navigate("/dashboard/albums", { replace: true });
-        }
+        });
+        setIsLoading(false);
+        navigate("/dashboard/albums");
       });
-      setIsLoading(false);
     }
   };
 
   const deleteFileObject = () => {
-    if (albumImageCoverURL) {
+    if (albumImageCover && albumImageCoverURL) {
       const deleteRef = ref(storage, albumImageCoverURL);
       deleteObject(deleteRef).then(() => {
         setAlbumImageCover(null);
@@ -86,7 +100,7 @@ const UploadNewAlbum = () => {
 
   return (
     <motion.div className="d-flex flex-column justify-content-center align-items-center p-4 w-100">
-      <p className="fw-semibold fs-5">New Album Details</p>
+      <p className="fw-semibold fs-5">Update Album Details</p>
 
       <div className="w-100 d-flex">
         <div
@@ -103,7 +117,7 @@ const UploadNewAlbum = () => {
               <img
                 src={albumImageCover}
                 className="w-100 h-100 object-fit-fill"
-                alt="Album Cover"
+                alt=""
               />
               <button
                 className="btn position-absolute rounded-circle border-0 bg-danger text-light fs-5"
@@ -133,13 +147,14 @@ const UploadNewAlbum = () => {
             value={albumName}
             onChange={(e) => setAlbumName(e.target.value)}
           />
+
           <input
             type="text"
             placeholder="Some description about album..."
             className="w-100 h-50 p-2 my-2 rounded-2 text-light"
             style={{ backgroundColor: "#323232", outline: "none" }}
-            value={albumDescript}
-            onChange={(e) => setAlbumDescript(e.target.value)}
+            value={albumDescription}
+            onChange={(e) => setAlbumDescription(e.target.value)}
           />
         </div>
       </div>
@@ -185,4 +200,4 @@ const FileUploader = ({ onUpload, fileType }) => {
   );
 };
 
-export default UploadNewAlbum;
+export default UpdateAlbum;

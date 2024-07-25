@@ -2,13 +2,16 @@ import React from "react";
 import "../../styles/Dashboard.css";
 import DashboardUsers from "./DashboardUsers";
 import DashboardSongs from "./DashboardSongs";
-import DashboardAlbum from "./DashboardAlbum";
+import DashboardAlbums from "./DashboardAlbums";
 import DashboardArtists from "./DashboardArtists";
 import { NavLink, Routes, Route } from "react-router-dom";
 import { Alert } from "react-bootstrap";
 import { useStateValue } from "../../context/stateProvider";
 import UploadNewSong from "./UploadNewSong";
 import UploadNewArtist from "./UploadNewArtist";
+import UploadNewAlbum from "./UploadNewAlbum";
+import UpdateAlbum from "./UpdateAlbum";
+import UpdateArtist from "./UpdateArtist";
 
 const Dashboard = () => {
   const [{ alertType }] = useStateValue();
@@ -29,16 +32,18 @@ const Dashboard = () => {
                 {/* Admin */}
                 <Route path="/users" element={<DashboardUsers />} />
                 <Route path="/songs" element={<DashboardSongs />} />
-                <Route path="/albums" element={<DashboardAlbum />} />
+                <Route path="/albums" element={<DashboardAlbums />} />
                 <Route path="/artists" element={<DashboardArtists />} />
+
                 {/* Upload data */}
                 <Route path="/newSong" element={<UploadNewSong />} />
                 <Route path="/newArtist" element={<UploadNewArtist />} />
-                {/* <Route path="/newAlbum" element={<UploadNewAlbum />} /> */}
+                <Route path="/newAlbum" element={<UploadNewAlbum />} />
+
                 {/* Update data*/}
-                {/* <Route path="/updateArtist/:id" element={<UpdateArtist />} />
-                    <Route path="/updateSong/:id" element={<UpdateSong />} />
-                    <Route path="/updateAlbum/:id" element={<UpdateAlbum />} /> */}
+                <Route path="/updateArtist/:id" element={<UpdateArtist />} />
+                {/* <Route path="/updateSong/:id" element={<UpdateSong />} /> */}
+                <Route path="/updateAlbum/:id" element={<UpdateAlbum />} />
               </Routes>
             </div>
           </div>

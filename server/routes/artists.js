@@ -1,142 +1,107 @@
 const express = require("express");
 const router = express.Router();
-const { bucket } = require("../config/firebase.config");
 const Artist = require("../models/Artist");
 
-const uploadFile = async (fileBuffer, fileName) => {
-  const file = bucket.file(fileName);
-  const stream = file.createWriteStream({
-    metadata: {
-      contentType: "application/octet-stream",
-    },
+// Save a new artist
+router.post("/save", async (req, res) => {
+  const { name, imageURL, description, twitter, instagram, songId } = req.body;
+
+  if (!name || !imageURL || !description) {
+    return res
+      .status(400)
+      .send({
+        success: false,
+        msg: "Name, imageURL, and description are required!",
+      });
+  }
+
+  const newArtist = new Artist({
+    name,
+    imageURL,
+    description,
+    twitter,
+    instagram,
+    songId,
   });
 
-  return new Promise((resolve, reject) => {
-    stream.on("error", (error) => {
-      reject(error);
-    });
-    stream.on("finish", async () => {
-      try {
-        const [url] = await file.getSignedUrl({
-          action: "read",
-          expires: "03-09-2491",
-        });
-        resolve(url);
-      } catch (error) {
-        reject(error);
-      }
-    });
-    stream.end(fileBuffer);
-  });
-};
-// Get an artist by ID
-router.get("/getArtist/:artistId", async (req, res) => {
   try {
-    const { artistId } = req.params;
-    const artist = await Artist.findById(artistId);
+    const savedArtist = await newArtist.save();
+    return res.status(200).send({ success: true, artist: savedArtist });
+  } catch (error) {
+    return res.status(400).send({ success: false, msg: error.message });
+  }
+});
 
-    if (!artist) {
-      return res.status(404).json({ message: "Artist not found!" });
+// Get an artist by ID
+router.get("/getArtist/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const artist = await Artist.findById(id);
+
+    if (artist) {
+      return res.status(200).send({ success: true, artist });
+    } else {
+      return res.status(404).send({ success: false, msg: "Artist not found" });
     }
-
-    res.status(200).json({ artist });
-  } catch (err) {
-    console.log(err);
-    res
-      .status(500)
-      .json({ message: "Failed to fetch artist", error: err.message });
+  } catch (error) {
+    return res.status(400).send({ success: false, msg: error.message });
   }
 });
 
 // Get all artists
 router.get("/getAll", async (req, res) => {
   try {
-    const artists = await Artist.find();
-    res.status(200).json({ artists });
-  } catch (err) {
-    console.log(err);
-    res
-      .status(500)
-      .json({ message: "Failed to fetch artists", error: err.message });
-  }
-});
+    const artists = await Artist.find().sort({ createdAt: 1 });
 
-// Upload a new artist
-router.post("/upload", async (req, res) => {
-  try {
-    const { name, imageBuffer, imageName, description, twitter, instagram } =
-      req.body;
-
-    const imageURL = imageBuffer
-      ? await uploadFile(Buffer.from(imageBuffer, "base64"), imageName)
-      : null;
-
-    const newArtist = new Artist({
-      name,
-      imageURL,
-      description,
-      twitter,
-      instagram,
-    });
-
-    await newArtist.save();
-    res.status(201).json({
-      message: "Artist uploaded successfully!",
-      artist: newArtist,
-    });
-  } catch (err) {
-    console.log(err);
-    res
-      .status(500)
-      .json({ message: "Artist upload failed!", error: err.message });
+    if (artists.length > 0) {
+      return res.status(200).send({ success: true, artists });
+    } else {
+      return res.status(404).send({ success: false, msg: "No artists found" });
+    }
+  } catch (error) {
+    return res.status(400).send({ success: false, msg: error.message });
   }
 });
 
 // Update an existing artist
-router.put("/update/:artistId", async (req, res) => {
-  try {
-    const { artistId } = req.params;
-    const { name, imageURL, description, twitter, instagram } = req.body;
+router.put("/update/:id", async (req, res) => {
+  const { id } = req.params;
+  const { name, imageURL, description, twitter, instagram, songId } = req.body;
 
+  try {
     const updatedArtist = await Artist.findByIdAndUpdate(
-      artistId,
-      { name, imageURL, description, twitter, instagram },
-      { new: true }
+      id,
+      { name, imageURL, description, twitter, instagram, songId },
+      { new: true, runValidators: true }
     );
 
-    if (!updatedArtist) {
-      return res.status(404).json({ message: "Artist not found!" });
+    if (updatedArtist) {
+      return res.status(200).send({ success: true, artist: updatedArtist });
+    } else {
+      return res.status(404).send({ success: false, msg: "Artist not found" });
     }
-
-    res.status(200).json({
-      message: "Artist updated successfully!",
-      artist: updatedArtist,
-    });
-  } catch (err) {
-    console.log(err);
-    res
-      .status(500)
-      .json({ message: "Artist update failed!", error: err.message });
+  } catch (error) {
+    return res.status(400).send({ success: false, msg: error.message });
   }
 });
 
 // Delete an artist
-router.delete("/delete/:artistId", async (req, res) => {
+router.delete("/delete/:id", async (req, res) => {
+  const { id } = req.params;
+
   try {
-    const { artistId } = req.params;
+    const result = await Artist.findByIdAndDelete(id);
 
-    const result = await Artist.findByIdAndDelete(artistId);
-
-    if (!result) {
-      return res.status(404).json({ message: "Artist not found!" });
+    if (result) {
+      return res
+        .status(200)
+        .send({ success: true, msg: "Artist deleted successfully" });
+    } else {
+      return res.status(404).send({ success: false, msg: "Artist not found" });
     }
-
-    res.status(200).json({ message: "Artist deleted successfully!" });
-  } catch (err) {
-    console.log(err);
-    res
-      .status(500)
-      .json({ message: "Artist deletion failed!", error: err.message });
+  } catch (error) {
+    return res.status(400).send({ success: false, msg: error.message });
   }
 });
 

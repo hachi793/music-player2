@@ -1,105 +1,102 @@
 const express = require("express");
 const router = express.Router();
-const { bucket } = require("../config/firebase.config");
-const Artist = require("../models/Album");
 const Album = require("../models/Album");
 
-const uploadFile = async (fileBuffer, fileName) => {
-  const file = bucket.file(fileName);
-  const stream = file.createWriteStream({
-    metadata: {
-      contentType: "application/octet-stream",
-    },
+// Save a new album
+router.post("/save", async (req, res) => {
+  const { name, imageURL, description, songs } = req.body;
+
+  if (!name || !imageURL || !description) {
+    return res.status(400).send({
+      success: false,
+      msg: "Title, imageURL, and description are required!",
+    });
+  }
+
+  const newAlbum = new Album({
+    name,
+    imageURL,
+    description,
+    songs,
   });
 
-  return new Promise((resolve, reject) => {
-    stream.on("error", (error) => {
-      reject(error);
-    });
-    stream.on("finish", async () => {
-      try {
-        const [url] = await file.getSignedUrl({
-          action: "read",
-          expires: "03-09-2491",
-        });
-        resolve(url);
-      } catch (error) {
-        reject(error);
-      }
-    });
-    stream.end(fileBuffer);
-  });
-};
-
-// upload a new album
-router.post("/upload", async (req, res) => {
   try {
-    const { name, imageBuffer, imageName, description } = req.body;
-    const imageURL = imageBuffer
-      ? await uploadFile(Buffer.from(imageBuffer, "base64"), imageName)
-      : null;
-
-    const newAlbum = newAlbum({
-      name,
-      imageURL,
-      imageBuffer,
-      description,
-    });
-    await newAlbum.save();
-    res.status(201).json({
-      message: "Album uploaded successfully",
-      album: newAlbum,
-    });
-  } catch (err) {
-    console.log(err);
-    res
-      .status(500)
-      .json({ message: "Album uploaded failed ", error: err.message });
+    const savedAlbum = await newAlbum.save();
+    return res.status(200).send({ success: true, album: savedAlbum });
+  } catch (error) {
+    return res.status(500).send({ success: false, msg: error.message });
   }
 });
 
-// Update an existing album
-router.put("/update/albumId", async (res, req) => {
-  try {
-    const { albumId } = req.params;
-    const { name, imageURL, description } = req.body;
-    const updatedAlbum = await Album.findByIdAndUpdate(
-      albumId,
-      {
-        name,
-        imageURL,
-        description,
-      },
-      { new: true }
-    );
+// Get an album by ID
+router.get("/getAlbum/:id", async (req, res) => {
+  const { id } = req.params;
 
-    if (!updatedAlbum) {
-      return res.status(404).json({ message: "Artist not found!" });
+  try {
+    const album = await Album.findById(id).populate("songs");
+
+    if (album) {
+      return res.status(200).send({ success: true, album });
+    } else {
+      return res.status(404).send({ success: false, msg: "Album not found" });
     }
-  } catch (err) {
-    console.log(err);
-    res
-      .status(500)
-      .json({ message: "Album updated failed", error: err.message });
+  } catch (error) {
+    return res.status(400).send({ success: false, msg: error.message });
+  }
+});
+
+// Get all albums
+router.get("/getAll", async (req, res) => {
+  try {
+    const albums = await Album.find().populate("songs").sort({ createdAt: -1 });
+
+    if (albums.length > 0) {
+      return res.status(200).send({ success: true, albums });
+    } else {
+      return res.status(404).send({ success: false, msg: "No albums found" });
+    }
+  } catch (error) {
+    return res.status(400).send({ success: false, msg: error.message });
+  }
+});
+// Update an existing album
+router.put("/update/:id", async (req, res) => {
+  const { id } = req.params;
+  const { name, imageURL, description, songs } = req.body;
+
+  try {
+    const updatedAlbum = await Album.findByIdAndUpdate(
+      id,
+      { name, imageURL, description, songs },
+      { new: true, runValidators: true }
+    ).populate("songs");
+
+    if (updatedAlbum) {
+      return res.status(200).send({ success: true, album: updatedAlbum });
+    } else {
+      return res.status(404).send({ success: false, msg: "Album not found" });
+    }
+  } catch (error) {
+    return res.status(400).send({ success: false, msg: error.message });
   }
 });
 
 // Delete an album
-router.delete("/delete/albumId", async (req, res) => {
+router.delete("/delete/:id", async (req, res) => {
+  const { id } = req.params;
+
   try {
-    const { albumId } = req.params;
+    const result = await Album.findByIdAndDelete(id);
 
-    const result = await Album.findOneAndDelete(albumId);
-
-    if (!result) {
-      return res.status(404).json({ message: "Album not found" });
+    if (result) {
+      return res
+        .status(200)
+        .send({ success: true, msg: "Album deleted successfully" });
+    } else {
+      return res.status(404).send({ success: false, msg: "Album not found" });
     }
-
-    res.status(200).json({ message: "Album deleted successfully" });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: "Album deleted failed" });
+  } catch (error) {
+    return res.status(400).send({ success: false, msg: error.message });
   }
 });
-
 module.exports = router;

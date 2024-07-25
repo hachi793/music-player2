@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const AlbumSchema = new mongoose.Schema(
   {
-    title: {
+    name: {
       type: String,
       required: true,
     },
@@ -14,12 +14,6 @@ const AlbumSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    artistId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Artist",
-      required: true,
-    },
-
     songs: [
       {
         type: mongoose.Schema.Types.ObjectId,

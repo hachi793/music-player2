@@ -109,7 +109,7 @@ export const getSongById = async (id) => {
 
 export const saveNewSong = async (data) => {
   try {
-    const res = await axios.post(`${baseURL}songs/upload`, data);
+    const res = await axios.post(`${baseURL}songs/save`, data);
     return res.data.song;
   } catch (error) {
     console.error("Error saving new song:", error);
@@ -142,27 +142,29 @@ export const getAllArtists = async () => {
   try {
     const res = await axios.get(`${baseURL}artists/getAll`);
     return res.data.artists;
-  } catch (err) {
-    console.error("Error fetching all artists:", err);
+  } catch (error) {
+    console.error("Error fetching all artists:", error);
+    return null;
+  }
+};
+
+export const saveNewArtist = async (data) => {
+  try {
+    const res = await axios.post(`${baseURL}artists/save`, data);
+    return res.data.artist;
+  } catch (error) {
+    console.error("Error saving new artist:", error);
     return null;
   }
 };
 
 export const getArtistById = async (id) => {
   try {
-    const res = await axios.get(`${baseURL}artist/getArtist/${id}`);
+    const res = await axios.get(`${baseURL}artists/getArtist/${id}`);
     return res.data.artist;
-  } catch (err) {
-    console.error(`Error fetching user ${id}:`, err);
-  }
-};
-
-export const saveNewArtist = async (data) => {
-  try {
-    const res = await axios.post(`${baseURL}songs/upload`, data);
-    return res.data.song;
-  } catch (err) {
-    console.error("Error saving new artist:", err);
+  } catch (error) {
+    console.error("Error fetching artist:", error);
+    return null;
   }
 };
 
@@ -170,16 +172,19 @@ export const updateArtistById = async (id, data) => {
   try {
     const res = await axios.put(`${baseURL}artists/update/${id}`, data);
     return res.data.artist;
-  } catch (err) {
-    console.error("Error updating artist:", err);
+  } catch (error) {
+    console.error("Error updating artist:", error);
+    return null;
   }
 };
+
 export const deleteArtistById = async (id) => {
   try {
-    const res = await axios.delete(`${baseURL}artist/delete/${id}`);
+    const res = await axios.delete(`${baseURL}artists/delete/${id}`);
     return res.data;
-  } catch (err) {
-    console.error("Error deleting artist:", err);
+  } catch (error) {
+    console.error("Error deleting artist:", error);
+    return null;
   }
 };
 
@@ -189,7 +194,8 @@ export const getAllAlbums = async () => {
     const res = await axios.get(`${baseURL}albums/getAll`);
     return res.data.albums;
   } catch (error) {
-    console.error("Error fetching all artist", error);
+    console.error("Error fetching all albums:", error);
+    return [];
   }
 };
 
@@ -199,15 +205,20 @@ export const getAlbumById = async (id) => {
     return res.data.album;
   } catch (error) {
     console.error("Error fetching album:", error);
+    return null;
   }
 };
 
 export const saveNewAlbum = async (data) => {
   try {
-    const res = await axios.post(`${baseURL}albums/upload`, data);
+    const res = await axios.post(`${baseURL}albums/save`, data);
     return res.data.album;
   } catch (error) {
-    console.error("Error saving new album:", error);
+    console.error(
+      "Error saving new album:",
+      error.response?.data || error.message
+    );
+    return null;
   }
 };
 
@@ -217,12 +228,13 @@ export const updateAlbumById = async (id, data) => {
     return res.data.album;
   } catch (error) {
     console.error("Error updating album:", error);
+    return null;
   }
 };
 
-export const deleteAlbumByUd = async (id) => {
+export const deleteAlbumById = async (id) => {
   try {
-    const res = await axios.delete(`${baseURL}album/delete/${id}`);
+    const res = await axios.delete(`${baseURL}albums/delete/${id}`);
     return res.data;
   } catch (error) {
     console.error("Error deleting album:", error);

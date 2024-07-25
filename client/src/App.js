@@ -12,6 +12,8 @@ import Music from "./components/music/Music";
 import Premium from "./components/premium/Premium";
 import Dashboard from "./components/admin/Dashboard";
 import UpdateProfile from "./components/users/UpdateProfile";
+import AlbumDetails from "./components/users/AlbumDetails";
+import ArtistDetails from "./components/users/ArtistDetails";
 
 function App() {
   return (
@@ -33,8 +35,8 @@ function App() {
             <Route path="/userProfile" element={<UpdateProfile />} />
             {/* <Route path="/myFavorites" element={<Favorites />} /> */}
 
-            {/* <Route path="/albumDetails/:id" element={<AlbumDetails />} />
-          <Route path="/artistDetails/:id" element={<ArtistDetails />} /> */}
+            <Route path="/albumDetails/:id" element={<AlbumDetails />} />
+            <Route path="/artistDetails/:id" element={<ArtistDetails />} />
           </Route>
         </Route>
       </Routes>

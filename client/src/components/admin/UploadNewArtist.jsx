@@ -28,10 +28,10 @@ const UploadNewArtist = () => {
   const uploadArtistImage = (e) => {
     const uploadedArtistFile = e.target.files[0];
     setArtistImageCover(URL.createObjectURL(uploadedArtistFile));
-    uploadFile(uploadedArtistFile, setArtistImageCoverURL);
+    uploadFile(uploadedArtistFile);
   };
 
-  const uploadFile = (file, setFileURL) => {
+  const uploadFile = (file) => {
     const fileName = `image/artist/${Date.now()}-${file.name}`;
     const storageRef = ref(storage, fileName);
     const uploadTask = uploadBytesResumable(storageRef, file);
@@ -44,7 +44,7 @@ const UploadNewArtist = () => {
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          setFileURL(downloadURL);
+          setArtistImageCoverURL(downloadURL);
         });
       }
     );
@@ -62,19 +62,23 @@ const UploadNewArtist = () => {
       };
 
       saveNewArtist(data).then((res) => {
-        getAllArtists().then((artists) => {
-          dispatch({
-            type: actionType.SET_ALL_ARTISTS,
-            allArtists: artists.artist,
+        if (res) {
+          getAllArtists().then((artists) => {
+            dispatch({
+              type: actionType.SET_ALL_ARTISTS,
+              allArtists: artists,
+            });
           });
-        });
-        setIsLoading(false);
-        setArtistName("");
-        setArtistImageCover(null);
-        setArtistTwt("");
-        setArtistIns("");
-        setArtistDescript("");
-        navigate("/dashboard/artists");
+          setIsLoading(false);
+          setArtistName("");
+          setArtistImageCover(null);
+          setArtistTwt("");
+          setArtistIns("");
+          setArtistDescript("");
+          navigate("/dashboard/artists");
+        } else {
+          setIsLoading(false);
+        }
       });
     }
   };
@@ -87,9 +91,6 @@ const UploadNewArtist = () => {
         setArtistImageCoverURL(null);
       });
     }
-    // if (artistImageCover) {
-    //   setArtistImageCover(null);
-    // }
   };
 
   return (
@@ -123,7 +124,7 @@ const UploadNewArtist = () => {
                   border: "none",
                   paddingBottom: "10px",
                 }}
-                onClick={() => deleteFileObject()}
+                onClick={deleteFileObject}
               >
                 <MdDelete className="text-light" />
               </button>

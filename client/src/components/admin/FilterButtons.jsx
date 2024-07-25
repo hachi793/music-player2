@@ -12,6 +12,7 @@ const FilterButtons = ({ filterData, flag }) => {
     useStateValue();
 
   const updateFilterButton = (name) => {
+    
     setFilterName(name);
     if (flag === "Artist") {
       dispatch({ type: actionType.SET_ARTIST_FILTER, artistFilter: name });
@@ -73,7 +74,7 @@ const FilterButtons = ({ filterData, flag }) => {
         >
           {filterData.map((data) => (
             <div
-              key={data.name}
+              key={data.name || data.id} 
               className="filter-content d-flex align-items-center gap-2 px-2 py-1 text-light"
               style={{ backgroundColor: "#7a7a7a", cursor: "pointer" }}
               onClick={() => {
@@ -81,18 +82,20 @@ const FilterButtons = ({ filterData, flag }) => {
                 setFilterMenu(false);
               }}
             >
-              {(flag === "Artist" || flag === "Album") && (
+              {(flag === "Artist" || flag === "Album") && data.imageURL && (
                 <img
                   src={data.imageURL}
                   className="rounded-5 object-fit-cover"
                   style={{ width: "20%", minHeight: "32px", height: "8%" }}
-                  alt={data.name}
+                  alt={data.name || "Image"}
                 />
               )}
               <p className="text-left m-0">
-                {data.name.length > 15
-                  ? `${data.name.slice(0, 14)}...`
-                  : data.name}
+                {data.name
+                  ? data.name.length > 15
+                    ? `${data.name.slice(0, 14)}...`
+                    : data.name
+                  : "No Name"}
               </p>
             </div>
           ))}

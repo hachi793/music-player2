@@ -6,7 +6,6 @@ import ArtistCard from "./ArtistCard";
 import { NavLink } from "react-router-dom";
 import { IoAdd } from "react-icons/io5";
 import { FaSearch } from "react-icons/fa";
-import "../../styles/Main.css";
 
 const DashboardArtists = () => {
   const [{ allArtists }, dispatch] = useStateValue();
@@ -14,16 +13,16 @@ const DashboardArtists = () => {
   const [filteredArtists, setFilteredArtists] = useState([]);
 
   useEffect(() => {
-    if (!allArtists) {
+    if (!allArtists || allArtists.length === 0) {
       getAllArtists().then((data) => {
         dispatch({
           type: actionType.SET_ALL_ARTISTS,
-          allArtists: data.artist,
+          allArtists: data,
         });
-        setFilteredArtists(data.artist);
+        setFilteredArtists(data); // Set the filtered artists after fetching data
       });
     } else {
-      setFilteredArtists(allArtists);
+      setFilteredArtists(allArtists); // Set the filtered artists to allArtists if already fetched
     }
   }, [allArtists, dispatch]);
 
@@ -61,7 +60,7 @@ const DashboardArtists = () => {
           />
         </div>
       </div>
-      <ArtistContainer data={filteredArtists} />{" "}
+      <ArtistContainer data={filteredArtists} />
     </div>
   );
 };
