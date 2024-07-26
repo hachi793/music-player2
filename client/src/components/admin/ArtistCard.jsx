@@ -12,7 +12,6 @@ import { useNavigate } from "react-router-dom";
 const ArtistCard = ({ data, index, type }) => {
   const [isDelete, setIsDelete] = useState(false);
   const [{ alertType, allAlbums, allArtist }, dispatch] = useStateValue();
-  const [albums, setAlbums] = useState([]);
   const [artists, setArtists] = useState([]);
   const navigate = useNavigate();
 

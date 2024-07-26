@@ -51,11 +51,11 @@ const UploadNewAlbum = () => {
     if (albumName && albumImageCoverURL) {
       setIsLoading(true);
       const data = {
-        title: albumName,
+        name: albumName,
         imageURL: albumImageCoverURL,
         description: albumDescript,
-        artistId: "", // Add artistId if required
-        songs: [], // Add songs if required
+        artistId: "",
+        songs: [],
       };
       saveNewAlbum(data).then((res) => {
         if (res) {

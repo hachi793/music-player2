@@ -45,7 +45,7 @@ const AlbumCard = ({ data }) => {
     <div className="card-wrap d-flex gap-2">
       <div className="card">
         <img src={data.imageURL} alt="" className="cardImage" />
-        <p className="cardContent">{data.title}</p>
+        <p className="cardContent">{data.name}</p>
         <p className="sub-text-small">
           {data.description && data.description.length > 20
             ? data.description.slice(0, 45) + "..."

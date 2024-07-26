@@ -31,7 +31,7 @@ const UpdateAlbum = () => {
       const album = await getAlbumById(id);
       console.log(album);
       if (album) {
-        setAlbumName(album.title);
+        setAlbumName(album.name);
         setAlbumImageCover(album.imageURL);
         setAlbumImageCoverURL(album.imageURL);
         setAlbumDescription(album.description);
@@ -70,7 +70,7 @@ const UpdateAlbum = () => {
       setIsLoading(true);
 
       const data = {
-        title: albumName,
+        name: albumName,
         imageURL: albumImageCoverURL,
         description: albumDescription,
       };
