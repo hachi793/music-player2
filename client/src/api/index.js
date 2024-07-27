@@ -93,7 +93,7 @@ export const getAllSongs = async () => {
     return res.data.songs;
   } catch (error) {
     console.error("Error fetching all songs:", error);
-    return null;
+    return [];
   }
 };
 
@@ -144,7 +144,7 @@ export const getAllArtists = async () => {
     return res.data.artists;
   } catch (error) {
     console.error("Error fetching all artists:", error);
-    return null;
+    return [];
   }
 };
 
