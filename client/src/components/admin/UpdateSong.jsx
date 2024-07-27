@@ -1,29 +1,29 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { storage } from "../../config/firebase.config";
 import { useStateValue } from "../../context/stateProvider";
 import FilterButtons from "./FilterButtons";
 import { filterByLanguage, filters } from "../../utils/supportFunctions";
-import { getAllSongs, saveNewSong } from "../../api";
+import { getAllSongs, getSongById, updateSongById } from "../../api";
+import { actionType } from "../../context/reducer";
+import { MdDelete, MdOutlineFileUpload } from "react-icons/md";
 import {
   deleteObject,
   getDownloadURL,
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
-import { actionType } from "../../context/reducer";
-import { MdDelete, MdOutlineFileUpload } from "react-icons/md";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import "../../styles/UpdateNewSong.css";
+import { useNavigate, useParams } from "react-router-dom";
 
-const UploadNewSong = () => {
+const UpdateSong = () => {
+  const { id } = useParams();
   const [songName, setSongName] = useState("");
   const [songImageCover, setSongImageCover] = useState(null);
   const [songImageCoverURL, setSongImageCoverURL] = useState(null);
   const [songAudio, setSongAudio] = useState(null);
   const [songAudioURL, setSongAudioURL] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-
+  const navigate = useNavigate();
   const [
     {
       allArtists,
@@ -36,7 +36,35 @@ const UploadNewSong = () => {
     dispatch,
   ] = useStateValue();
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    const fetchSong = async () => {
+      const song = await getSongById(id);
+      if (song) {
+        setSongName(song.name);
+        setSongImageCover(song.imageURL);
+        setSongImageCoverURL(song.imageURL);
+        setSongAudio(song.songURL);
+        setSongAudioURL(song.songURL);
+        dispatch({
+          type: actionType.SET_ARTIST_FILTER,
+          artistFilter: song.artist,
+        });
+        dispatch({
+          type: actionType.SET_LANGUAGE_FILTER,
+          languageFilter: song.language,
+        });
+        dispatch({
+          type: actionType.SET_ALBUM_FILTER,
+          albumFilter: song.album,
+        });
+        dispatch({
+          type: actionType.SET_FILTER_TERM,
+          filterTerm: song.category,
+        });
+      }
+    };
+    fetchSong();
+  }, [id, dispatch]);
 
   const deleteFileObject = (type) => {
     if (type === "songImage") {
@@ -76,61 +104,24 @@ const UploadNewSong = () => {
   };
 
   const saveSong = () => {
-    const data = {
-      name: songName,
-      imageURL: songImageCoverURL,
-      audioURL: songAudioURL,
-      artistId: artistFilter,
-      albumId: albumFilter,
-      language: languageFilter,
-      category: filterTerm,
-    };
-
-    console.log("Data to send:", data);
-
-    if (
-      songImageCoverURL &&
-      songAudioURL &&
-      songName &&
-      artistFilter &&
-      albumFilter &&
-      languageFilter &&
-      filterTerm
-    ) {
+    if (songImageCoverURL && songAudioURL) {
       setIsLoading(true);
-      saveNewSong(data)
-        .then((res) => {
-          if (res) {
-            getAllSongs().then((songs) => {
-              if (songs) {
-                dispatch({
-                  type: actionType.SET_ALL_SONGS,
-                  allSongs: songs,
-                });
-              } else {
-                console.error("Failed to fetch all songs");
-              }
-            });
-          } else {
-            console.error("Failed to save new song");
-          }
-        })
-        .finally(() => {
-          setIsLoading(false);
-          setSongName("");
-          setSongImageCover(null);
-          setSongAudio(null);
-          dispatch({ type: actionType.SET_ARTIST_FILTER, artistFilter: null });
-          dispatch({
-            type: actionType.SET_LANGUAGE_FILTER,
-            languageFilter: null,
-          });
-          dispatch({ type: actionType.SET_ALBUM_FILTER, albumFilter: null });
-          dispatch({ type: actionType.SET_FILTER_TERM, filterTerm: null });
-          navigate("/dashboard/songs");
+      const data = {
+        name: songName,
+        imageURL: songImageCoverURL,
+        songURL: songAudioURL,
+        album: albumFilter,
+        artist: artistFilter,
+        language: languageFilter,
+        category: filterTerm,
+      };
+
+      updateSongById(id, data).then(() => {
+        getAllSongs().then((songs) => {
+          dispatch({ type: actionType.SET_ALL_SONGS, allSongs: songs.song });
         });
-    } else {
-      console.error("Required fields are missing");
+        navigate("/dashboard/songs", { replace: true });
+      });
     }
   };
 
@@ -148,7 +139,7 @@ const UploadNewSong = () => {
 
   return (
     <motion.div className="d-flex flex-column justify-content-center align-items-center p-4 w-100">
-      <p className="fw-semibold fs-5">New Song Details</p>
+      <p className="fw-semibold fs-5">Update Song Details</p>
       <input
         type="text"
         placeholder="Type your song name..."
@@ -178,8 +169,8 @@ const UploadNewSong = () => {
             <div className="position-relative w-100 h-100 overflow-hidden rounded-3">
               <img
                 src={songImageCover}
-                className="w-100 h-100 object-fit-fill"
-                alt=""
+                className="w-100 h-100 object-fit-cover"
+                alt="Song Cover"
               />
               <button
                 className="btn position-absolute rounded-circle border-0 bg-danger text-light fs-5"
@@ -231,7 +222,7 @@ const UploadNewSong = () => {
               </button>
             </div>
           ) : (
-            <FileUploader onUpload={uploadSongAudio} fileType="audio" />
+            <FileUploader onUpload={uploadSongAudio} fileType="songAudio" />
           )}
         </div>
       </div>
@@ -275,4 +266,4 @@ const FileUploader = ({ onUpload, fileType }) => {
   );
 };
 
-export default UploadNewSong;
+export default UpdateSong;

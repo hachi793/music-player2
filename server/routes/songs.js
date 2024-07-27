@@ -4,18 +4,20 @@ const Song = require("../models/Song");
 
 // Save a new song
 router.post("/save", async (req, res) => {
-  const { name, imageURL, artistId, albumId, language, category } = req.body;
+  const { name, imageURL, audioURL, artistId, albumId, language, category } =
+    req.body;
 
-  if (!name || !imageURL || !artistId || !language || !category) {
+  if (!name || !imageURL || !audioURL || !artistId || !language || !category) {
     return res.status(400).send({
       success: false,
-      msg: "Name, imageURL, artistId, language, and category are required!",
+      msg: "Name, imageURL, audiURL, artistId, language, and category are required!",
     });
   }
 
   const newSong = new Song({
     name,
     imageURL,
+    audioURL,
     artistId,
     albumId,
     language,
@@ -70,12 +72,13 @@ router.get("/getAll", async (req, res) => {
 // Update an existing song
 router.put("/update/:id", async (req, res) => {
   const { id } = req.params;
-  const { name, imageURL, artistId, albumId, language, category } = req.body;
+  const { name, imageURL, audioURL, artistId, albumId, language, category } =
+    req.body;
 
   try {
     const updatedSong = await Song.findByIdAndUpdate(
       id,
-      { name, imageURL, artistId, albumId, language, category },
+      { name, imageURL, audioURL, artistId, albumId, language, category },
       { new: true, runValidators: true }
     )
       .populate("artistId")

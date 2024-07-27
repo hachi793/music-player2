@@ -1,8 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../../styles/SongCard.css";
 import { IoTrash } from "react-icons/io5";
 import { deleteObject as deleteStorageObject, ref } from "firebase/storage";
-import { deleteSongById, getAllSongs } from "../../api";
+import {
+  deleteSongById,
+  getAllSongs,
+  getAllArtists,
+  getAllAlbums,
+} from "../../api";
 import { useStateValue } from "../../context/stateProvider";
 import { actionType } from "../../context/reducer";
 import { storage } from "../../config/firebase.config";
@@ -12,9 +17,40 @@ import { useNavigate } from "react-router-dom";
 
 const SongCard = ({ data, index, type }) => {
   const [isDelete, setIsDelete] = useState(false);
-  const [{ alertType, isSongPlaying, songIndex }, dispatch] = useStateValue();
+  const [
+    { allArtists, allAlbums, alertType, isSongPlaying, songIndex },
+    dispatch,
+  ] = useStateValue();
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (allArtists.length === 0) {
+      getAllArtists().then((artists) => {
+        dispatch({
+          type: actionType.SET_ALL_ARTISTS,
+          allArtists: artists,
+        });
+      });
+    }
+
+    if (allAlbums.length === 0) {
+      getAllAlbums().then((albums) => {
+        dispatch({
+          type: actionType.SET_ALL_ALBUMS,
+          allAlbums: albums,
+        });
+      });
+    }
+  }, [allArtists, allAlbums, dispatch]);
+
+  const artistsList = Array.isArray(allArtists) ? allArtists : [];
+  const artist = artistsList.find(
+    (artist) => artist._id === data.artistId?._id
+  );
+
+  const albumsList = Array.isArray(allAlbums) ? allAlbums : [];
+  const album = albumsList.find((album) => album._id === data.albumId?._id);
 
   const deleteSong = (songData) => {
     if (type === "song") {
@@ -35,7 +71,7 @@ const SongCard = ({ data, index, type }) => {
               getAllSongs().then((data) => {
                 dispatch({
                   type: actionType.SET_ALL_SONGS,
-                  allSongs: data.song,
+                  allSongs: data,
                 });
               });
             } else {
@@ -85,15 +121,10 @@ const SongCard = ({ data, index, type }) => {
       remainingSeconds < 10 ? `0${remainingSeconds}` : remainingSeconds;
     return `${minutes}:${formattedSeconds}`;
   };
+
   return (
     <div className="">
-      <motion.div
-        // whileTap={{ scale: 0.8 }}
-        // initial={{ opacity: 0, translateX: -50 }}
-        // animate={{ opacity: 1, translateX: 0 }}
-        // transition={{ duration: 0.3, delay: index * 0.1 }}
-        className="position-relative songcard mx-3 my-2 p-2 row"
-      >
+      <motion.div className="position-relative songcard mx-3 my-2 p-2 row">
         <img
           src={data.imageURL}
           style={{ width: "100px", height: "80px" }}
@@ -110,11 +141,12 @@ const SongCard = ({ data, index, type }) => {
           <p className="fw-bold">
             {data.name.length > 15 ? `${data.name.slice(0, 15)}...` : data.name}
           </p>
-
-          <p style={{ color: "#aaa" }}>{data.artist}</p>
+          <p style={{ color: "#aaa" }}>
+            {artist ? artist.name : "Unknown Artist"}
+          </p>
         </div>
 
-        <p className="col-3 info">{data.album}</p>
+        <p className="col-3 info">{album ? album.name : "Unknown Album"}</p>
         <p className="col-2 info">{data.category}</p>
         <p
           className="text-light col-1"

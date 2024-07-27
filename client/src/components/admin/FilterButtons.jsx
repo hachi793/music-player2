@@ -11,13 +11,12 @@ const FilterButtons = ({ filterData, flag }) => {
   const [{ filterTerm, languageFilter, artistFilter, albumFilter }, dispatch] =
     useStateValue();
 
-  const updateFilterButton = (name) => {
-    
+  const updateFilterButton = (name, id) => {
     setFilterName(name);
     if (flag === "Artist") {
-      dispatch({ type: actionType.SET_ARTIST_FILTER, artistFilter: name });
+      dispatch({ type: actionType.SET_ARTIST_FILTER, artistFilter: id });
     } else if (flag === "Album") {
-      dispatch({ type: actionType.SET_ALBUM_FILTER, albumFilter: name });
+      dispatch({ type: actionType.SET_ALBUM_FILTER, albumFilter: id });
     } else if (flag === "Language") {
       dispatch({ type: actionType.SET_LANGUAGE_FILTER, languageFilter: name });
     } else if (flag === "Category") {
@@ -74,11 +73,11 @@ const FilterButtons = ({ filterData, flag }) => {
         >
           {filterData.map((data) => (
             <div
-              key={data.name || data.id} 
+              key={data._id}
               className="filter-content d-flex align-items-center gap-2 px-2 py-1 text-light"
               style={{ backgroundColor: "#7a7a7a", cursor: "pointer" }}
               onClick={() => {
-                updateFilterButton(data.name);
+                updateFilterButton(data.name, data._id); // Pass name and ObjectId
                 setFilterMenu(false);
               }}
             >
