@@ -12,8 +12,7 @@ const AlbumDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [album, setAlbum] = useState(null);
-  const [{ allSongs, allArtists, isSongPlaying, songIndex }, dispatch] =
-    useStateValue();
+  const [{ allSongs, isSongPlaying, songIndex }, dispatch] = useStateValue();
 
   useEffect(() => {
     const fetchAlbum = async () => {

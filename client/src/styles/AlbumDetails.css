@@ -39,10 +39,9 @@
   font-weight: 300;
 }
 .album-detail-page .main-inner .details-page-content h1 {
-  font-size: 7rem;
+  font-size: 5rem;
   margin: 0;
   line-height: 1;
-  word-spacing: -18px;
   letter-spacing: -3px;
 }
 .album-detail-page.main-inner .details-page-song {
