@@ -12,8 +12,7 @@ const ArtistDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [artist, setArtist] = useState(null);
-  const [{ allSongs, allAlbums, isSongPlaying, songIndex }, dispatch] =
-    useStateValue();
+  const [{ allSongs, isSongPlaying, songIndex }, dispatch] = useStateValue();
 
   useEffect(() => {
     const fetchArtist = async () => {
@@ -28,7 +27,7 @@ const ArtistDetails = () => {
       getAllSongs().then((data) => {
         dispatch({
           type: actionType.SET_ALL_SONGS,
-          allSongs: data.song,
+          allSongs: data,
         });
       });
     }
@@ -59,13 +58,8 @@ const ArtistDetails = () => {
   };
 
   const filteredSongs = allSongs
-    ? allSongs.filter((song) => song.artist === artist?.name)
+    ? allSongs.filter((song) => song.artistId.name === artist?.name)
     : [];
-
-  const findAlbumIdByName = (name) => {
-    const album = allAlbums.find((album) => name === album.name);
-    return album ? album._id : null;
-  };
 
   return (
     <div className="outerWrap">
@@ -138,20 +132,21 @@ const ArtistDetails = () => {
                               </span>
                               <div className="song-info text-light col-5 d-flex justify-content-between flex-column">
                                 <p className="fw-bold">{song.name}</p>
-                                <p style={{ color: "#aaa" }}>{song.artist}</p>
+                                <p style={{ color: "#aaa" }}>
+                                  {song.artistId.name}
+                                </p>
                               </div>
                               <p
                                 className="col-2 details-link"
                                 onClick={() => {
-                                  const albumId = findAlbumIdByName(song.album);
-                                  navigate(`/albumDetails/${albumId}`);
+                                  navigate(`/albumDetails/${song.albumId._id}`);
                                 }}
                               >
-                                {song.album}
+                                {song.albumId.name}
                               </p>
                               <p className="col-2">{song.category}</p>
                               <p className="col-2">
-                                {formatDuration(song.songURL.length)}
+                                {formatDuration(song.audioURL.length)}
                               </p>
                             </motion.div>
                           ))}
