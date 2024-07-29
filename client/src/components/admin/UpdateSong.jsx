@@ -43,20 +43,29 @@ const UpdateSong = () => {
         setSongName(song.name);
         setSongImageCover(song.imageURL);
         setSongImageCoverURL(song.imageURL);
-        setSongAudio(song.songURL);
-        setSongAudioURL(song.songURL);
+        setSongAudio(song.audioURL);
+        setSongAudioURL(song.audioURL);
+        const artistsList = Array.isArray(allArtists) ? allArtists : [];
+        const artist = artistsList.find(
+          (artist) => artist._id === song.artistId?._id
+        );
         dispatch({
           type: actionType.SET_ARTIST_FILTER,
-          artistFilter: song.artist,
+          artistFilter: artist,
+        });
+        const albumsList = Array.isArray(allAlbums) ? allAlbums : [];
+        const album = albumsList.find(
+          (album) => album._id === song.albumId?._id
+        );
+        dispatch({
+          type: actionType.SET_ALBUM_FILTER,
+          albumFilter: album,
         });
         dispatch({
           type: actionType.SET_LANGUAGE_FILTER,
           languageFilter: song.language,
         });
-        dispatch({
-          type: actionType.SET_ALBUM_FILTER,
-          albumFilter: song.album,
-        });
+
         dispatch({
           type: actionType.SET_FILTER_TERM,
           filterTerm: song.category,
@@ -64,7 +73,7 @@ const UpdateSong = () => {
       }
     };
     fetchSong();
-  }, [id, dispatch]);
+  }, [id, allAlbums, allArtists, dispatch]);
 
   const deleteFileObject = (type) => {
     if (type === "songImage") {
@@ -109,16 +118,16 @@ const UpdateSong = () => {
       const data = {
         name: songName,
         imageURL: songImageCoverURL,
-        songURL: songAudioURL,
-        album: albumFilter,
-        artist: artistFilter,
+        audioURL: songAudioURL,
+        artistId: artistFilter,
+        albumId: albumFilter,
         language: languageFilter,
         category: filterTerm,
       };
 
       updateSongById(id, data).then(() => {
         getAllSongs().then((songs) => {
-          dispatch({ type: actionType.SET_ALL_SONGS, allSongs: songs.song });
+          dispatch({ type: actionType.SET_ALL_SONGS, allSongs: songs });
         });
         navigate("/dashboard/songs", { replace: true });
       });
