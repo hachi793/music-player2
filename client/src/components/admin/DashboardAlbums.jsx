@@ -34,7 +34,7 @@ const DashboardAlbums = () => {
       setFilteredAlbums(allAlbums);
     } else {
       const filtered = allAlbums.filter((album) =>
-        album.title.toLowerCase().includes(value.toLowerCase())
+        album.name.toLowerCase().includes(value.toLowerCase())
       );
       setFilteredAlbums(filtered);
     }

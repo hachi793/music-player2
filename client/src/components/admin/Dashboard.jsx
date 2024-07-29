@@ -12,6 +12,7 @@ import UploadNewArtist from "./UploadNewArtist";
 import UploadNewAlbum from "./UploadNewAlbum";
 import UpdateAlbum from "./UpdateAlbum";
 import UpdateArtist from "./UpdateArtist";
+import UpdateSong from "./UpdateSong";
 
 const Dashboard = () => {
   const [{ alertType }] = useStateValue();
@@ -42,7 +43,7 @@ const Dashboard = () => {
 
                 {/* Update data*/}
                 <Route path="/updateArtist/:id" element={<UpdateArtist />} />
-                {/* <Route path="/updateSong/:id" element={<UpdateSong />} /> */}
+                <Route path="/updateSong/:id" element={<UpdateSong />} />
                 <Route path="/updateAlbum/:id" element={<UpdateAlbum />} />
               </Routes>
             </div>

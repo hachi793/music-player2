@@ -19,10 +19,10 @@ const DashboardArtists = () => {
           type: actionType.SET_ALL_ARTISTS,
           allArtists: data,
         });
-        setFilteredArtists(data); // Set the filtered artists after fetching data
+        setFilteredArtists(data);
       });
     } else {
-      setFilteredArtists(allArtists); // Set the filtered artists to allArtists if already fetched
+      setFilteredArtists(allArtists);
     }
   }, [allArtists, dispatch]);
 
