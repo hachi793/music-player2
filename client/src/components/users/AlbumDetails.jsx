@@ -63,13 +63,8 @@ const AlbumDetails = () => {
   };
 
   const filteredSongs = allSongs
-    ? allSongs.filter((song) => song.album === album.name)
+    ? allSongs.filter((song) => song.albumId.name === album.name)
     : [];
-
-  const findArtistIdByName = (name) => {
-    const artist = allArtists.find((artist) => artist.name === name);
-    return artist ? artist._id : null;
-  };
 
   return (
     <div className="outerWrap">
@@ -152,19 +147,16 @@ const AlbumDetails = () => {
                               className="details-link"
                               style={{ color: "#aaa" }}
                               onClick={() => {
-                                const artistId = findArtistIdByName(
-                                  song.artist
-                                );
-                                navigate(`/artistDetails/${artistId}`);
+                                navigate(`/artistDetails/${song.artistId._id}`);
                               }}
                             >
-                              {song.artist}
+                              {song.artistId.name}
                             </p>
                           </div>
-                          <p className="col-2">{song.album}</p>
+                          <p className="col-2">{song.albumId.name}</p>
                           <p className="col-2">{song.category}</p>
                           <p className="col-2">
-                            {formatDuration(song.songURL.length)}
+                            {formatDuration(song.audioURL.length)}
                           </p>
                         </motion.div>
                       ))}
