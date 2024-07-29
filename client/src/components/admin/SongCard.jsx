@@ -24,26 +24,6 @@ const SongCard = ({ data, index, type }) => {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (allArtists.length === 0) {
-      getAllArtists().then((artists) => {
-        dispatch({
-          type: actionType.SET_ALL_ARTISTS,
-          allArtists: artists,
-        });
-      });
-    }
-
-    if (allAlbums.length === 0) {
-      getAllAlbums().then((albums) => {
-        dispatch({
-          type: actionType.SET_ALL_ALBUMS,
-          allAlbums: albums,
-        });
-      });
-    }
-  }, [allArtists, allAlbums, dispatch]);
-
   const deleteSong = (songData) => {
     if (type === "song") {
       const deleteRef = ref(storage, songData.imageURL);
