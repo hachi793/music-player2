@@ -1,12 +1,18 @@
 import React, { useEffect, useState, useCallback } from "react";
 import "../../styles/NavBar.css";
 import "../../styles/SongCard.css";
-import { getAllAlbums, getAllArtists, getAllSongs } from "../../api";
+import {
+  getAllAlbums,
+  getAllArtists,
+  getAllSongs,
+  addFavoriteSong,
+  removeFavoriteSong,
+} from "../../api";
 import { actionType } from "../../context/reducer";
 import { useStateValue } from "../../context/stateProvider";
 import { FaChevronRight, FaPlay, FaSearch, FaHeart } from "react-icons/fa";
-import { motion } from "framer-motion";
 import { CiHeart } from "react-icons/ci";
+import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
 const Main = () => {
@@ -17,14 +23,21 @@ const Main = () => {
   ] = useStateValue();
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
+  const [favoriteSongs, setFavoriteSongs] = useState([]);
 
   useEffect(() => {
-    if (!allArtists) {
+    if (user) {
+      setFavoriteSongs(user.favoriteSongs || []);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (!allArtists || allArtists.length === 0) {
       getAllArtists()
         .then((data) => {
           dispatch({
             type: actionType.SET_ALL_ARTISTS,
-            allArtists: data?.artist,
+            allArtists: data,
           });
         })
         .catch((error) => console.error("Error fetching artists:", error));
@@ -32,12 +45,12 @@ const Main = () => {
   }, [allArtists, dispatch]);
 
   useEffect(() => {
-    if (!allAlbums) {
+    if (!allAlbums || allAlbums.length === 0) {
       getAllAlbums()
         .then((data) => {
           dispatch({
             type: actionType.SET_ALL_ALBUMS,
-            allAlbums: data?.album,
+            allAlbums: data,
           });
         })
         .catch((error) => console.error("Error fetching albums:", error));
@@ -45,12 +58,12 @@ const Main = () => {
   }, [allAlbums, dispatch]);
 
   useEffect(() => {
-    if (!allSongs) {
+    if (!allSongs || allSongs.length === 0) {
       getAllSongs()
         .then((data) => {
           dispatch({
             type: actionType.SET_ALL_SONGS,
-            allSongs: data?.song,
+            allSongs: data,
           });
         })
         .catch((error) => console.error("Error fetching songs:", error));
@@ -109,13 +122,41 @@ const Main = () => {
   };
 
   const findArtistIdByName = (name) => {
-    const artist = allArtists.find((artist) => artist.name === name);
+    const artist = allArtists.find(
+      (artist) => artist.name.toLowerCase() === name.toLowerCase()
+    );
     return artist ? artist._id : null;
   };
 
   const findAlbumIdByName = (name) => {
-    const album = allAlbums.find((album) => album.name === name);
+    const album = allAlbums.find(
+      (album) => album.name.toLowerCase() === name.toLowerCase()
+    );
     return album ? album._id : null;
+  };
+
+  const findArtistNameById = (artistId) => {
+    const artist = allArtists.find((artist) => artist._id === artistId);
+    return artist ? artist.name : null;
+  };
+
+  const findAlbumNameById = (albumId) => {
+    const album = allAlbums.find((album) => album._id === albumId);
+    return album ? album.name : null;
+  };
+
+  const handleFavorite = async (songId) => {
+    try {
+      if (favoriteSongs.includes(songId)) {
+        await removeFavoriteSong(user._id, songId);
+        setFavoriteSongs(favoriteSongs.filter((id) => id !== songId));
+      } else {
+        await addFavoriteSong(user._id, songId);
+        setFavoriteSongs([...favoriteSongs, songId]);
+      }
+    } catch (error) {
+      console.error("Error updating favorites:", error);
+    }
   };
 
   return (
@@ -259,38 +300,33 @@ const Main = () => {
                         onClick={() => addToContext(song, index)}
                       />
                     </span>
-                    <div className="song-info text-light col-5 d-flex justify-content-between flex-column">
-                      <p className="fw-bold">{song.name}</p>
+                    <div className="song-info text-light col-4 d-flex justify-content-between flex-column">
+                      <p className="fw-bold mb-1">{song.name}</p>
                       <p
                         className="details-link"
-                        style={{ cursor: "pointer" }}
+                        style={{ color: "#aaa" }}
                         onClick={() => {
-                          const artistId = findArtistIdByName(song.artist);
-                          if (artistId) {
-                            navigate(`/artistDetails/${artistId}`);
-                          }
+                          navigate(`/artistDetails/${song.artistId._id}`);
                         }}
                       >
-                        {song.artist}
+                        {song.artistId.name}
                       </p>
                     </div>
                     <p
-                      className="col-2 info details-link"
-                      style={{ cursor: "pointer" }}
+                      className="col-3 info details-link"
                       onClick={() => {
-                        const albumId = findAlbumIdByName(song.album);
-                        if (albumId) {
-                          navigate(`/albumDetails/${albumId}`);
-                        }
+                        navigate(`/albumDetails/${song.albumId._id}`);
                       }}
                     >
-                      {song.album}
+                      {song.albumId.name}
                     </p>
                     <p className="col-1 info">{song.category}</p>
                     <p className="col-2 info">
-                      {song.duration ? formatDuration(song.duration) : "00:00"}
+                      {song.audioURL.length
+                        ? formatDuration(song.audioURL.length)
+                        : "00:00"}
                     </p>
-                    {/* <p className="col-1">
+                    <p className="col-1">
                       {favoriteSongs.includes(song._id) ? (
                         <FaHeart
                           className="fs-5"
@@ -303,7 +339,7 @@ const Main = () => {
                           onClick={() => handleFavorite(song._id)}
                         />
                       )}
-                    </p> */}
+                    </p>
                   </motion.div>
                 ))}
               </div>
