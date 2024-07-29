@@ -44,14 +44,6 @@ const SongCard = ({ data, index, type }) => {
     }
   }, [allArtists, allAlbums, dispatch]);
 
-  const artistsList = Array.isArray(allArtists) ? allArtists : [];
-  const artist = artistsList.find(
-    (artist) => artist._id === data.artistId?._id
-  );
-
-  const albumsList = Array.isArray(allAlbums) ? allAlbums : [];
-  const album = albumsList.find((album) => album._id === data.albumId?._id);
-
   const deleteSong = (songData) => {
     if (type === "song") {
       const deleteRef = ref(storage, songData.imageURL);
@@ -141,12 +133,10 @@ const SongCard = ({ data, index, type }) => {
           <p className="fw-bold">
             {data.name.length > 15 ? `${data.name.slice(0, 15)}...` : data.name}
           </p>
-          <p style={{ color: "#aaa" }}>
-            {artist ? artist.name : "Unknown Artist"}
-          </p>
+          <p style={{ color: "#aaa" }}>{data.artistId.name}</p>
         </div>
 
-        <p className="col-3 info">{album ? album.name : "Unknown Album"}</p>
+        <p className="col-3 info">{data.albumId.name}</p>
         <p className="col-2 info">{data.category}</p>
         <p
           className="text-light col-1"
