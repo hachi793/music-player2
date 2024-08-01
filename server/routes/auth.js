@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const User = require("../models/User");
+const Song = require("../models/Song");
 
 const router = express.Router();
 
@@ -18,6 +19,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
+/* User Signup */
 router.post("/signup", upload.single("profileImage"), async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -33,7 +35,7 @@ router.post("/signup", upload.single("profileImage"), async (req, res) => {
       return res.status(409).json({ message: "User already exists!" });
     }
 
-    /* Mã hóa password */
+    /* Encrypt password */
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -55,7 +57,7 @@ router.post("/signup", upload.single("profileImage"), async (req, res) => {
   }
 });
 
-/* USER LOGIN*/
+/* User Login */
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -66,14 +68,10 @@ router.post("/login", async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res
-        .status(400)
-        .json({ message: "Thông tin đăng nhập không chính xác!" });
+      return res.status(400).json({ message: "Incorrect login details!" });
     }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-    delete user.password;
-
     res.status(200).json({ token, user });
   } catch (err) {
     console.log(err);
@@ -81,7 +79,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-/* GET ALL USERS */
+/* Get All Users */
 router.get("/getUsers", async (req, res) => {
   try {
     const options = { sort: { createdAt: 1 } };
@@ -97,7 +95,7 @@ router.get("/getUsers", async (req, res) => {
   }
 });
 
-/* GET USER DATA */
+/* Get User Data */
 router.get("/getUser/:userId", async (req, res) => {
   try {
     const filter = { _id: req.params.userId };
@@ -113,7 +111,7 @@ router.get("/getUser/:userId", async (req, res) => {
   }
 });
 
-/* UPDATE USER INFO */
+/* Update User Info */
 router.patch("/updateUser/:userId", async (req, res) => {
   try {
     const userId = req.params.userId;
@@ -143,7 +141,7 @@ router.patch("/updateUser/:userId", async (req, res) => {
   }
 });
 
-/* UPDATE USER ROLE */
+/* Update User Role */
 router.put("/updateRole/:userId", async (req, res) => {
   try {
     const filter = { _id: req.params.userId };
@@ -151,7 +149,7 @@ router.put("/updateRole/:userId", async (req, res) => {
 
     const updatedUser = await User.findOneAndUpdate(
       filter,
-      { role: role },
+      { role },
       { new: true }
     );
     res.status(200).send({ success: true, user: updatedUser });
@@ -160,7 +158,7 @@ router.put("/updateRole/:userId", async (req, res) => {
   }
 });
 
-/* DELETE USER */
+/* Delete User */
 router.delete("/deleteUser/:userId", async (req, res) => {
   try {
     const filter = { _id: req.params.userId };
@@ -173,6 +171,56 @@ router.delete("/deleteUser/:userId", async (req, res) => {
     }
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+/* Add a Song to Favorites */
+router.post("/addToFavorite", async (req, res) => {
+  const { userId, songId } = req.body;
+  try {
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    if (!user.favoriteSongs.includes(songId)) {
+      user.favoriteSongs.push(songId);
+      await user.save();
+      res.status(200).json({ message: "Song added to favorites" });
+    } else {
+      res.status(400).json({ error: "Song already in favorites" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/* Remove a Song from Favorites */
+router.post("/removeFromFavorite", async (req, res) => {
+  const { userId, songId } = req.body;
+  try {
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    user.favoriteSongs = user.favoriteSongs.filter(
+      (id) => id.toString() !== songId
+    );
+    await user.save();
+    res.status(200).json({ message: "Song removed from favorites" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/* Get Favorite Songs */
+router.get("/getFavoriteSongs", async (req, res) => {
+  const { userId } = req.query;
+
+  try {
+    const user = await User.findById(userId).populate("favoriteSongs");
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    res.status(200).json({ favoriteSongs: user.favoriteSongs });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 

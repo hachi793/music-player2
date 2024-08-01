@@ -23,10 +23,7 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "member",
     },
-    favoriteSongs: {
-      type: Array,
-      default: [],
-    },
+    favoriteSongs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Song" }],
   },
   { timestamps: true }
 );

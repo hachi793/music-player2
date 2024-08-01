@@ -50,8 +50,8 @@ const reducer = (state, action) => {
       };
     case actionType.SET_FAVORITE_SONGS:
       return {
-        state,
-        favorite_songs: action.favorite_songs,
+        ...state,
+        favoriteSongs: action.favoriteSongs,
       };
 
     // Filter case

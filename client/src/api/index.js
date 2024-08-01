@@ -86,6 +86,37 @@ export const deleteUserById = async (id) => {
   }
 };
 
+export const addToFavorite = async (userId, songId) => {
+  try {
+    await axios.post(`${baseURL}auth/addToFavorite`, { userId, songId });
+  } catch (error) {
+    console.error("Error adding favorite song:", error);
+    throw error;
+  }
+};
+
+// Remove a song from favorites
+export const removeFromFavorite = async (userId, songId) => {
+  try {
+    await axios.post(`${baseURL}auth/removeFromFavorite`, { userId, songId });
+  } catch (error) {
+    console.error("Error removing favorite song:", error);
+    throw error;
+  }
+};
+
+export const getFavoriteSongs = async (userId) => {
+  try {
+    const response = await axios.get(`${baseURL}auth/getFavoriteSongs`, {
+      params: { userId },
+    });
+    return response.data.favoriteSongs;
+  } catch (error) {
+    console.error("Error fetching favorite songs:", error);
+    throw error;
+  }
+};
+
 // Song API
 export const getAllSongs = async () => {
   try {
