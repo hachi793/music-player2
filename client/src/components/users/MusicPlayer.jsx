@@ -200,8 +200,7 @@ const MusicPlayer = () => {
 };
 
 export const PlaylistCard = () => {
-  const [{ allSongs, songIndex, isSongPlaying, miniPlayer }, dispatch] =
-    useStateValue();
+  const [{ allSongs, songIndex, isSongPlaying }, dispatch] = useStateValue();
 
   useEffect(() => {
     if (!allSongs) {
