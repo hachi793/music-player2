@@ -8,12 +8,14 @@ import { CiHeart, CiMenuKebab } from "react-icons/ci";
 import { getUserById, addToFavorite, removeFromFavorite } from "../../api";
 import { actionType } from "../../context/reducer";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const Favorites = () => {
   const [
     { allSongs, isSongPlaying, songIndex, alertType, favoriteSongs, user },
     dispatch,
   ] = useStateValue();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user && !favoriteSongs) {
@@ -128,13 +130,7 @@ const Favorites = () => {
                   >
                     <FaPlay />
                   </div>
-                  <div className="heart-icon">
-                    <CiHeart
-                      style={{
-                        fontSize: "40px",
-                      }}
-                    />
-                  </div>
+
                   <div className="dots-icon">
                     <CiMenuKebab
                       style={{
@@ -167,11 +163,26 @@ const Favorites = () => {
                             </span>
                             <div className="song-info text-light col-5 d-flex justify-content-between flex-column">
                               <p className="fw-bold">{song.name}</p>
-                              <p style={{ color: "#aaa" }}>
+                              <p
+                                style={{ color: "#aaa" }}
+                                className="details-link"
+                                onClick={() =>
+                                  navigate(
+                                    `/artistDetails/${song.artistId._id}`
+                                  )
+                                }
+                              >
                                 {song.artistId?.name}
                               </p>
                             </div>
-                            <p className="col-2">{song.albumId?.name}</p>
+                            <p
+                              className="col-2 details-link"
+                              onClick={() =>
+                                navigate(`/albumDetails/${song.albumId._id}`)
+                              }
+                            >
+                              {song.albumId?.name}
+                            </p>
                             <p className="col-2">{song.category}</p>
                             <p className="col-1">
                               {formatDuration(song.audioURL?.length || 0)}
