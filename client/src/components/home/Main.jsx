@@ -5,8 +5,8 @@ import {
   getAllAlbums,
   getAllArtists,
   getAllSongs,
-  addFavoriteSong,
-  removeFavoriteSong,
+  addToFavorite,
+  removeFromFavorite,
 } from "../../api";
 import { actionType } from "../../context/reducer";
 import { useStateValue } from "../../context/stateProvider";
@@ -121,39 +121,34 @@ const Main = () => {
     return `${minutes}:${formattedSeconds}`;
   };
 
-  const findArtistIdByName = (name) => {
-    const artist = allArtists.find(
-      (artist) => artist.name.toLowerCase() === name.toLowerCase()
-    );
-    return artist ? artist._id : null;
-  };
-
-  const findAlbumIdByName = (name) => {
-    const album = allAlbums.find(
-      (album) => album.name.toLowerCase() === name.toLowerCase()
-    );
-    return album ? album._id : null;
-  };
-
-  const findArtistNameById = (artistId) => {
-    const artist = allArtists.find((artist) => artist._id === artistId);
-    return artist ? artist.name : null;
-  };
-
-  const findAlbumNameById = (albumId) => {
-    const album = allAlbums.find((album) => album._id === albumId);
-    return album ? album.name : null;
-  };
-
   const handleFavorite = async (songId) => {
     try {
+      let updatedFavorites;
+
       if (favoriteSongs.includes(songId)) {
-        await removeFavoriteSong(user._id, songId);
-        setFavoriteSongs(favoriteSongs.filter((id) => id !== songId));
+        await removeFromFavorite(user._id, songId);
+        updatedFavorites = favoriteSongs.filter((id) => id !== songId);
       } else {
-        await addFavoriteSong(user._id, songId);
-        setFavoriteSongs([...favoriteSongs, songId]);
+        await addToFavorite(user._id, songId);
+        updatedFavorites = [...favoriteSongs, songId];
       }
+
+      setFavoriteSongs(updatedFavorites);
+
+      dispatch({
+        type: actionType.SET_FAVORITE_SONGS,
+        favoriteSongs: updatedFavorites,
+      });
+
+      dispatch({
+        type: actionType.SET_USER,
+        user: { ...user, favoriteSongs: updatedFavorites },
+      });
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify({ ...user, favoriteSongs: updatedFavorites })
+      );
     } catch (error) {
       console.error("Error updating favorites:", error);
     }
