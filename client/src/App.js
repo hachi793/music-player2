@@ -4,7 +4,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Signup from "./components/users/Signup";
 import Login from "./components/users/Login";
 import { Routes, Route } from "react-router-dom";
-import Home from "./components/home/Home";
 import PrivateRoute from "./PrivateRoute";
 import Layout from "./Layout";
 import Main from "./components/home/Main";
@@ -14,6 +13,7 @@ import Dashboard from "./components/admin/Dashboard";
 import UpdateProfile from "./components/users/UpdateProfile";
 import AlbumDetails from "./components/users/AlbumDetails";
 import ArtistDetails from "./components/users/ArtistDetails";
+import Favorites from "./components/users/Favorites";
 
 function App() {
   return (
@@ -24,7 +24,6 @@ function App() {
         <Route element={<Layout />}>
           <Route path="/" element={<Main />} />
         </Route>
-
         {/*Private Routes */}
         <Route element={<PrivateRoute />}>
           <Route element={<Layout />}>
@@ -33,7 +32,7 @@ function App() {
 
             <Route path="/dashboard/*" element={<Dashboard />} />
             <Route path="/userProfile" element={<UpdateProfile />} />
-            {/* <Route path="/myFavorites" element={<Favorites />} /> */}
+            <Route path="/myFavorites" element={<Favorites />} />
 
             <Route path="/albumDetails/:id" element={<AlbumDetails />} />
             <Route path="/artistDetails/:id" element={<ArtistDetails />} />

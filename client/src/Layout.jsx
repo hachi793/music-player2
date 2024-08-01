@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import { useStateValue } from "./context/stateProvider";
 import NavBar from "./components/home/NavBar";
 import Header from "./components/home/Header";
+import MusicPlayer from "./components/users/MusicPlayer";
 
 const Layout = () => {
   const [{ isSongPlaying }] = useStateValue();
@@ -18,11 +19,8 @@ const Layout = () => {
           <Outlet />
         </div>
       </div>
-      {/* {isSongPlaying && (
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 50 }}
+      {isSongPlaying && (
+        <div
           className="position-fixed bottom-0 start-50 translate-middle-x d-flex justify-content-center align-items-center"
           style={{
             minWidth: "700px",
@@ -32,8 +30,8 @@ const Layout = () => {
           }}
         >
           <MusicPlayer />
-        </motion.div>
-      )} */}
+        </div>
+      )}
     </div>
   );
 };
