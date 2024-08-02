@@ -5,7 +5,12 @@ import "../../styles/NavBar.css";
 import "../../styles/Favorites.css";
 import { FaPlay, FaHeart } from "react-icons/fa";
 import { CiHeart, CiMenuKebab } from "react-icons/ci";
-import { getUserById, addToFavorite, removeFromFavorite } from "../../api";
+import {
+  addToFavorite,
+  removeFromFavorite,
+  getFavoriteSongs,
+  getAllSongs,
+} from "../../api";
 import { actionType } from "../../context/reducer";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -16,24 +21,36 @@ const Favorites = () => {
     dispatch,
   ] = useStateValue();
   const navigate = useNavigate();
+  useEffect(() => {
+    if (!allSongs || allSongs.length === 0) {
+      getAllSongs()
+        .then((data) => {
+          dispatch({
+            type: actionType.SET_ALL_SONGS,
+            allSongs: data,
+          });
+        })
+        .catch((error) => console.error("Error fetching songs:", error));
+    }
+  }, [allSongs, dispatch]);
 
   useEffect(() => {
-    if (user && !favoriteSongs) {
-      const userId = user._id;
-      getUserById(userId)
-        .then((data) => {
-          if (data.user && Array.isArray(data.user.favoriteSongs)) {
-            dispatch({
-              type: actionType.SET_FAVORITE_SONGS,
-              favoriteSongs: data.user.favoriteSongs,
-            });
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching user data:", error);
-        });
+    if (user) {
+      const fetchFavoriteSongs = async () => {
+        try {
+          const favoriteSongs = await getFavoriteSongs(user._id);
+          dispatch({
+            type: actionType.SET_FAVORITE_SONGS,
+            favoriteSongs,
+          });
+        } catch (error) {
+          console.error("Error fetching favorite songs:", error);
+        }
+      };
+
+      fetchFavoriteSongs();
     }
-  }, [favoriteSongs, dispatch, user]);
+  }, [user, dispatch]);
 
   const addToContext = (song, index) => {
     if (!isSongPlaying) {
@@ -93,7 +110,7 @@ const Favorites = () => {
   return (
     <div className="outerWrap">
       <div className="app">
-        <div className="main" style={{ marginTop: "10px" }}>
+        <div className="main">
           <div className="playlist-page">
             <div className="main-inner">
               <div className="playlist-page-info mx-3">
