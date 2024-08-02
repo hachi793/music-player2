@@ -53,10 +53,7 @@ function Header() {
             <img
               src={
                 user.profileImagePath
-                  ? `http://localhost:3001/${user.profileImagePath.replace(
-                      "public",
-                      ""
-                    )}`
+                  ? user.profileImagePath
                   : "/assets/default-profile.png"
               }
               alt=""
