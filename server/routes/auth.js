@@ -112,32 +112,67 @@ router.get("/getUser/:userId", async (req, res) => {
 });
 
 /* Update User Info */
-router.patch("/updateUser/:userId", async (req, res) => {
+router.patch("/update-details", async (req, res) => {
   try {
-    const userId = req.params.userId;
-    const { name, email, password } = req.body;
+    const { userId, name, email, profileImagePath } = req.body;
 
-    const existingUser = await User.findById(userId);
-    if (!existingUser) {
-      return res.status(404).json({ message: "User not found!" });
-    }
-    existingUser.name = name;
-    existingUser.email = email;
-
-    if (password) {
-      const salt = await bcrypt.genSalt();
-      const hashedPassword = await bcrypt.hash(password, salt);
-      existingUser.password = hashedPassword;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
 
-    await existingUser.save();
-    res.status(200).json({
-      message: "User information updated successfully!",
-      user: existingUser,
-    });
+    if (name) user.name = name;
+    if (email) user.email = email;
+    if (profileImagePath) user.profileImagePath = profileImagePath;
+
+    await user.save();
+    res
+      .status(200)
+      .json({ message: "User details updated successfully", user });
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: err.message });
+    console.error("Update details failed:", err);
+    res
+      .status(500)
+      .json({ message: "Update details failed!", error: err.message });
+  }
+});
+
+router.patch("/update-password", async (req, res) => {
+  try {
+    const { userId, password, newPassword, confirmNewPassword } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (password && newPassword) {
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res
+          .status(401)
+          .json({ message: "Current password is incorrect" });
+      }
+
+      if (newPassword !== confirmNewPassword) {
+        return res.status(400).json({ message: "New passwords do not match" });
+      }
+
+      const salt = await bcrypt.genSalt();
+      user.password = await bcrypt.hash(newPassword, salt);
+      await user.save();
+
+      res.status(200).json({ message: "Password updated successfully" });
+    } else {
+      res
+        .status(400)
+        .json({ message: "Current password and new password are required" });
+    }
+  } catch (err) {
+    console.error("Update password failed:", err);
+    res
+      .status(500)
+      .json({ message: "Update password failed!", error: err.message });
   }
 });
 
@@ -211,11 +246,11 @@ router.post("/removeFromFavorite", async (req, res) => {
 });
 
 /* Get Favorite Songs */
-router.get("/getFavoriteSongs", async (req, res) => {
-  const { userId } = req.query;
+router.get("/getFavoriteSongs/:userId", async (req, res) => {
+  const filter = { _id: req.params.userId };
 
   try {
-    const user = await User.findById(userId).populate("favoriteSongs");
+    const user = await User.findById(filter);
     if (!user) return res.status(404).json({ error: "User not found" });
 
     res.status(200).json({ favoriteSongs: user.favoriteSongs });

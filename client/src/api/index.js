@@ -56,12 +56,22 @@ export const getUserById = async (id) => {
   }
 };
 
-export const updateUser = async (id, data) => {
+export const updateUserDetails = async (data) => {
   try {
-    const res = await axios.patch(`${baseURL}auth/updateUser/${id}`, data);
+    const res = await axios.patch(`${baseURL}auth/update-details`, data);
     return res.data.user;
   } catch (error) {
-    console.error("Error updating user:", error);
+    console.error("Error updating user details:", error);
+    return null;
+  }
+};
+
+export const updateUserPassword = async (data) => {
+  try {
+    const res = await axios.patch(`${baseURL}auth/update-password`, data);
+    return res.data.user;
+  } catch (error) {
+    console.error("Error updating user password:", error);
     return null;
   }
 };
@@ -107,9 +117,12 @@ export const removeFromFavorite = async (userId, songId) => {
 
 export const getFavoriteSongs = async (userId) => {
   try {
-    const response = await axios.get(`${baseURL}auth/getFavoriteSongs`, {
-      params: { userId },
-    });
+    const response = await axios.get(
+      `${baseURL}auth/getFavoriteSongs/${userId}`,
+      {
+        params: { userId },
+      }
+    );
     return response.data.favoriteSongs;
   } catch (error) {
     console.error("Error fetching favorite songs:", error);
