@@ -1,5 +1,3 @@
-import logo from "./logo.svg";
-// import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Signup from "./components/users/Signup";
 import Login from "./components/users/Login";
@@ -14,6 +12,7 @@ import UpdateProfile from "./components/users/UpdateProfile";
 import AlbumDetails from "./components/users/AlbumDetails";
 import ArtistDetails from "./components/users/ArtistDetails";
 import Favorites from "./components/users/Favorites";
+import UserDetails from "./components/admin/UserDetails";
 
 function App() {
   return (
@@ -36,6 +35,7 @@ function App() {
 
             <Route path="/albumDetails/:id" element={<AlbumDetails />} />
             <Route path="/artistDetails/:id" element={<ArtistDetails />} />
+            <Route path="/userDetails/:id" element={<UserDetails />} />
           </Route>
         </Route>
       </Routes>

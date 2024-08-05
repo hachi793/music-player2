@@ -11,6 +11,9 @@
 .btn-delete {
   transition: all 0.3s ease-in;
 }
+.details-link:hover {
+  text-decoration: underline;
+}
 /* .btn-delete:hover {
   background-color: red;
   color: white;
