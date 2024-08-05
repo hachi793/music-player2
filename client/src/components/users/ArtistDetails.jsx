@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/ArtistDetails.css";
-import { getAllSongs, getArtistById } from "../../api";
+import {
+  addToFavorite,
+  getAllSongs,
+  getArtistById,
+  removeFromFavorite,
+} from "../../api";
 import { useNavigate, useParams } from "react-router-dom";
-import { FaPlay } from "react-icons/fa";
+import { FaPlay, FaHeart } from "react-icons/fa";
 import { CiHeart, CiMenuKebab } from "react-icons/ci";
 import { useStateValue } from "../../context/stateProvider";
 import { actionType } from "../../context/reducer";
@@ -12,7 +17,9 @@ const ArtistDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [artist, setArtist] = useState(null);
-  const [{ allSongs, isSongPlaying, songIndex }, dispatch] = useStateValue();
+  const [{ allSongs, isSongPlaying, songIndex, user }, dispatch] =
+    useStateValue();
+  const [favoriteSongs, setFavoriteSongs] = useState(user.favoriteSongs);
 
   useEffect(() => {
     const fetchArtist = async () => {
@@ -55,6 +62,39 @@ const ArtistDetails = () => {
     const formattedSeconds =
       remainingSeconds < 10 ? `0${remainingSeconds}` : remainingSeconds;
     return `${minutes}:${formattedSeconds}`;
+  };
+
+  const handleFavorite = async (songId) => {
+    try {
+      let updatedFavorites;
+
+      if (favoriteSongs.includes(songId)) {
+        await removeFromFavorite(user._id, songId);
+        updatedFavorites = favoriteSongs.filter((id) => id !== songId);
+      } else {
+        await addToFavorite(user._id, songId);
+        updatedFavorites = [...favoriteSongs, songId];
+      }
+
+      setFavoriteSongs(updatedFavorites);
+
+      dispatch({
+        type: actionType.SET_FAVORITE_SONGS,
+        favoriteSongs: updatedFavorites,
+      });
+
+      dispatch({
+        type: actionType.SET_USER,
+        user: { ...user, favoriteSongs: updatedFavorites },
+      });
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify({ ...user, favoriteSongs: updatedFavorites })
+      );
+    } catch (error) {
+      console.error("Error updating favorites:", error);
+    }
   };
 
   const filteredSongs = allSongs
@@ -144,9 +184,23 @@ const ArtistDetails = () => {
                               >
                                 {song.albumId.name}
                               </p>
-                              <p className="col-2">{song.category}</p>
+                              <p className="col-1">{song.category}</p>
                               <p className="col-2">
                                 {formatDuration(song.audioURL.length)}
+                              </p>
+                              <p className="col-1">
+                                {favoriteSongs.includes(song._id) ? (
+                                  <FaHeart
+                                    className="fs-5"
+                                    style={{ color: "#0FFF50" }}
+                                    onClick={() => handleFavorite(song._id)}
+                                  />
+                                ) : (
+                                  <CiHeart
+                                    className="fs-4"
+                                    onClick={() => handleFavorite(song._id)}
+                                  />
+                                )}
                               </p>
                             </motion.div>
                           ))}

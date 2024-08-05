@@ -1,11 +1,8 @@
 import React, { useState } from "react";
 import "../../styles/Header.css";
 import { NavLink, useNavigate } from "react-router-dom";
-import {
-  FaRegUserCircle,
-  FaChevronCircleLeft,
-  FaChevronCircleRight,
-} from "react-icons/fa";
+import { FaRegUserCircle, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+
 import { useStateValue } from "../../context/stateProvider";
 import { actionType } from "../../context/reducer";
 
@@ -30,12 +27,12 @@ function Header() {
     >
       <ul className="menu d-flex justify-content-center align-items-center list-unstyled mb-0">
         <div className="d-flex align-items-center gap-4 fs-4">
-          <FaChevronCircleLeft
+          <FaChevronLeft
             style={{ color: "white", cursor: "pointer" }}
             className="change-page"
             onClick={() => navigate(-1)}
           />
-          <FaChevronCircleRight
+          <FaChevronRight
             style={{ color: "white", cursor: "pointer" }}
             className="change-page"
             onClick={() => navigate(1)}

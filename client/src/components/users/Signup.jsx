@@ -26,35 +26,33 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    e.preventDefault();
     const validationErrors = {};
 
     if (!formData.email.trim()) {
-      validationErrors.email = "* Yêu cầu nhập email";
+      validationErrors.email = "* Please input email";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      validationErrors.email = "* Email không đúng định dạng";
+      validationErrors.email = "* Email is not valid";
     }
 
     if (!formData.password.trim()) {
-      validationErrors.password = "* Yêu cầu nhập mật khẩu";
+      validationErrors.password = "* Please input password";
     } else if (
       formData.password.length < 10 ||
       !/[A-Z]/.test(formData.password) ||
       !/[!@#$%^&*()\\|,.<>?]+/.test(formData.password)
     ) {
       validationErrors.password =
-        "Mật khẩu pháỉ có ít nhất 10 ký tự , 1 ký tự in hoa và 1 ký tự đặc biệt";
+        "Password must have at least 10 letter, 1 capital letter and 1 special character";
     }
     if (!formData.confirmPassword.trim()) {
-      validationErrors.confirmPasswordassword = "* Yêu cầu nhập lại mật khẩu";
+      validationErrors.confirmPassword = "* Please confirm again password";
     } else if (formData.confirmPassword !== formData.password) {
       validationErrors.confirmPassword =
-        "Mật khẩu không đúng , xin mời nhập lại";
+        "Password is not match, please confirm again";
     }
 
     if (!formData.name.trim()) {
-      validationErrors.name = "* Yêu cầu nhập tên";
+      validationErrors.name = "* Please input name";
     }
     // if (!formData.profileImage.trim()) {
     //   validationErrors.profileImage = "Yêu cầu chọn ảnh đại diện";
@@ -88,13 +86,11 @@ const Signup = () => {
         <header>
           <header>
             <div className="logo bg-black py-4 pe-0 ps-3">
-              <a>
-                <img
-                  src="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_CMYK_White.png"
-                  alt=""
-                  style={{ width: "120px" }}
-                />
-              </a>
+              <img
+                src="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_CMYK_White.png"
+                alt=""
+                style={{ width: "120px" }}
+              />
             </div>
           </header>
         </header>
@@ -242,7 +238,7 @@ const Signup = () => {
               <label htmlFor="image" className=" d-flex ">
                 <img
                   src="../assets/addImage.png"
-                  alt="add profile photo"
+                  alt="add profile"
                   style={{ width: "8%", height: "8%" }}
                 />
                 <p className="text-light ms-3">Upload your profile image</p>
@@ -251,7 +247,7 @@ const Signup = () => {
               {formData.profileImage && (
                 <img
                   src={URL.createObjectURL(formData.profileImage)}
-                  alt="profile photo"
+                  alt="profile"
                   onChange={handleChange}
                   style={{ maxWidth: "80px" }}
                 />

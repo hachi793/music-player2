@@ -23,13 +23,7 @@ const Main = () => {
   ] = useStateValue();
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
-  const [favoriteSongs, setFavoriteSongs] = useState([]);
-
-  useEffect(() => {
-    if (user) {
-      setFavoriteSongs(user.favoriteSongs || []);
-    }
-  }, [user]);
+  const [favoriteSongs, setFavoriteSongs] = useState(user.favoriteSongs);
 
   useEffect(() => {
     if (!allArtists || allArtists.length === 0) {

@@ -22,15 +22,16 @@ const Login = () => {
     const validationErrors = {};
 
     if (!formData.email.trim()) {
-      validationErrors.email = "* Yêu cầu nhập email";
+      validationErrors.email = "* Please input email";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      validationErrors.email = "* Email không đúng định dạng";
+      validationErrors.email = "* Email is not valid";
     }
 
     if (!formData.password.trim()) {
-      validationErrors.password = "* Yêu cầu nhập mật khẩu";
+      validationErrors.password = "* Please input password";
     } else if (formData.password.length < 10) {
-      validationErrors.password = "Mật khẩu cần ít nhất 10 ký tự";
+      validationErrors.password =
+        "Password must have at least 10 letters , 1 capital letter and 1 special character";
     }
 
     setErrors(validationErrors);
@@ -68,13 +69,11 @@ const Login = () => {
     <div>
       <header>
         <div className="logo bg-black py-4 pe-0 ps-3">
-          <a>
-            <img
-              src="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_CMYK_White.png"
-              alt=""
-              style={{ width: "150px" }}
-            />
-          </a>
+          <img
+            src="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_CMYK_White.png"
+            alt=""
+            style={{ width: "150px" }}
+          />
         </div>
       </header>
 
@@ -171,12 +170,12 @@ const Login = () => {
 
               <button type="submit">Login</button>
 
-              <a
+              <p
                 className="d-block text-center text-light fw-medium text-decoration-underline"
                 style={{ cursor: "pointer" }}
               >
                 Forgot password
-              </a>
+              </p>
             </form>
           </div>
 
