@@ -26,13 +26,15 @@
 .profile-page .main-inner .profile-page-main .profile-image {
   width: 250px;
   height: 230px;
+  position: relative;
+  border-radius: 10px;
+  border: 2px solid #b3b3b3;
 }
 .profile-page .main-inner .profile-page-main .profile-image img {
   height: 100%;
   width: 100%;
-  object-fit: cover;
-  -webkit-box-shadow: 0 4px 60px rgba(0, 0, 0, 0.5);
-  box-shadow: 0 4px 60px rgba(0, 0, 0, 0.5);
+  object-fit: fill;
+  border-radius: 10px;
 }
 .profile-page .main-inner .profile-page-info {
   text-align: left;
@@ -53,21 +55,23 @@
   font-size: 4rem;
   margin: 0;
   line-height: 1;
-  word-spacing: -18px;
   letter-spacing: -3px;
 }
+
+.password-content,
 .profile-content {
   width: 40%;
   margin: auto;
 }
-.profile-content:not(:first-child) label {
+.profile-content:not(:first-child) label,
+.password-content:not(:first-child) label {
   margin-top: 10px;
 }
 .profile-content input[type="email"],
-.profile-content input[type="password"],
-.profile-content input[type="text"] {
+.profile-content input[type="text"],
+.password-content input[type="password"] {
   display: block;
-  padding: 14px;
+  padding: 12px;
   width: 100%;
   margin-bottom: 15px;
   margin: auto;
@@ -86,9 +90,9 @@
   justify-content: center;
 }
 button {
-  background: rgb(88, 207, 96);
-  padding: 10px;
+  background: rgb(73, 177, 80);
+  padding: 8px;
   border: none;
   border-radius: 5px;
-  font-size: 1.3rem;
+  font-size: 1rem;
 }

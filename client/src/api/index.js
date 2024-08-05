@@ -69,10 +69,10 @@ export const updateUserDetails = async (data) => {
 export const updateUserPassword = async (data) => {
   try {
     const res = await axios.patch(`${baseURL}auth/update-password`, data);
-    return res.data.user;
+    return res.data;
   } catch (error) {
-    console.error("Error updating user password:", error);
-    return null;
+    console.error("Error updating password:", error);
+    throw error.response.data.message || "Error updating password";
   }
 };
 
