@@ -15,7 +15,7 @@ import UpdateArtist from "./UpdateArtist";
 import UpdateSong from "./UpdateSong";
 
 const Dashboard = () => {
-  const [{ alertType }] = useStateValue();
+  const [{ alertType, user }] = useStateValue();
   return (
     <>
       <div className="outerWrap">
@@ -31,20 +31,29 @@ const Dashboard = () => {
             <div className="w-100 my-3 p-3 d-flex gap-5">
               <Routes>
                 {/* Admin */}
-                <Route path="/users" element={<DashboardUsers />} />
-                <Route path="/songs" element={<DashboardSongs />} />
-                <Route path="/albums" element={<DashboardAlbums />} />
-                <Route path="/artists" element={<DashboardArtists />} />
+                {user.role === "admin" ? (
+                  <>
+                    <Route path="/users" element={<DashboardUsers />} />
+                    <Route path="/songs" element={<DashboardSongs />} />
+                    <Route path="/albums" element={<DashboardAlbums />} />
+                    <Route path="/artists" element={<DashboardArtists />} />
 
-                {/* Upload data */}
-                <Route path="/newSong" element={<UploadNewSong />} />
-                <Route path="/newArtist" element={<UploadNewArtist />} />
-                <Route path="/newAlbum" element={<UploadNewAlbum />} />
+                    {/* Upload data */}
+                    <Route path="/newSong" element={<UploadNewSong />} />
+                    <Route path="/newArtist" element={<UploadNewArtist />} />
+                    <Route path="/newAlbum" element={<UploadNewAlbum />} />
 
-                {/* Update data*/}
-                <Route path="/updateArtist/:id" element={<UpdateArtist />} />
-                <Route path="/updateSong/:id" element={<UpdateSong />} />
-                <Route path="/updateAlbum/:id" element={<UpdateAlbum />} />
+                    {/* Update data*/}
+                    <Route
+                      path="/updateArtist/:id"
+                      element={<UpdateArtist />}
+                    />
+                    <Route path="/updateSong/:id" element={<UpdateSong />} />
+                    <Route path="/updateAlbum/:id" element={<UpdateAlbum />} />
+                  </>
+                ) : (
+                  <p>Only admin can review this</p>
+                )}
               </Routes>
             </div>
           </div>

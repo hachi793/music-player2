@@ -6,9 +6,10 @@ import { FaSearch, FaStar, FaRegUserCircle } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import moment from "moment";
 import { getAllUsers, updateUserRole, deleteUserById } from "../../api";
+import { useNavigate } from "react-router-dom";
 
 const DashboardUsers = () => {
-  const [{ allUsers, user }, dispatch] = useStateValue();
+  const [{ allUsers }, dispatch] = useStateValue();
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredUsers, setFilteredUsers] = useState([]);
 
@@ -130,10 +131,11 @@ const DashboardUsers = () => {
   );
 };
 
-const DashboardUserCard = ({ data, index, fetchAllUsers }) => {
+const DashboardUserCard = ({ data, fetchAllUsers }) => {
   const [{ user }, dispatch] = useStateValue();
   const [isUserRoleUpdated, setIsUserRoleUpdated] = useState(false);
   const createdAt = moment(new Date(data.createdAt)).format("MMM Do YYYY");
+  const navigate = useNavigate();
 
   const handleRoleUpdate = async () => {
     try {
@@ -147,7 +149,7 @@ const DashboardUserCard = ({ data, index, fetchAllUsers }) => {
           user: updatedUser,
         });
         setIsUserRoleUpdated(false);
-        fetchAllUsers(); // Refresh the list of users
+        fetchAllUsers();
       }
     } catch (err) {
       console.log("Error updating user role:", err.message);
@@ -158,7 +160,7 @@ const DashboardUserCard = ({ data, index, fetchAllUsers }) => {
     try {
       const response = await deleteUserById(data._id);
       if (response) {
-        fetchAllUsers(); // Refresh the list of users
+        fetchAllUsers();
       }
     } catch (err) {
       console.log("Error deleting user:", err.message);
@@ -177,7 +179,7 @@ const DashboardUserCard = ({ data, index, fetchAllUsers }) => {
       {data._id !== user?._id && (
         <div
           className="btn-delete position-absolute rounded-2 d-flex align-items-center justify-content-center p-2 m-2"
-          style={{ height: "8%", left: "4%" }}
+          style={{ height: "8%", left: "5%" }}
           onClick={handleDeleteUser}
         >
           <MdDelete className="text-danger" />
@@ -186,7 +188,7 @@ const DashboardUserCard = ({ data, index, fetchAllUsers }) => {
       {data._id === user?._id && (
         <div
           className="btn-delete position-absolute rounded-2 d-flex align-items-center justify-content-center p-2 m-2"
-          style={{ height: "8%", left: "4%" }}
+          style={{ height: "8%", left: "5%" }}
         >
           <FaStar style={{ color: "yellow" }} />
         </div>
@@ -196,12 +198,12 @@ const DashboardUserCard = ({ data, index, fetchAllUsers }) => {
         className="d-flex align-items-center justify-content-center"
         style={{ minWidth: "45px", width: "85px" }}
       >
-        {data.imageURL ? (
+        {data.profileImagePath ? (
           <img
-            src={data.imageURL}
+            src={data.profileImagePath}
             alt=""
             className="rounded-pill"
-            style={{ width: "50px" }}
+            style={{ width: "50px", height: "50px" }}
           />
         ) : (
           <FaRegUserCircle style={{ width: "40px", height: "40px" }} />
@@ -209,14 +211,24 @@ const DashboardUserCard = ({ data, index, fetchAllUsers }) => {
       </div>
 
       {/* User info */}
-      <p className="text-center" style={{ width: "275px", minWidth: "160px" }}>
+      <p
+        className="text-center mb-0 details-link"
+        style={{ width: "275px", minWidth: "160px" }}
+        onClick={() => navigate(`/userDetails/${data._id}`)}
+      >
         {data.name ? data.name : data._id}
       </p>
 
-      <p className="text-center" style={{ width: "275px", minWidth: "160px" }}>
+      <p
+        className="text-center mb-0"
+        style={{ width: "275px", minWidth: "160px" }}
+      >
         {data.email}
       </p>
-      <p className="text-center" style={{ width: "275px", minWidth: "160px" }}>
+      <p
+        className="text-center mb-0"
+        style={{ width: "275px", minWidth: "160px" }}
+      >
         {createdAt}
       </p>
       <div
