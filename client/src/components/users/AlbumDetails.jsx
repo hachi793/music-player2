@@ -71,98 +71,106 @@ const AlbumDetails = () => {
         <div className="main">
           <div className="album-detail-page">
             <div className="main-inner">
-              <div className="details-page-info">
-                <div className="details-info-img">
-                  <img src={album.imageURL} alt={album.name} />
-                </div>
-                <div className="details-page-content">
-                  <p className="small-textBold">Album</p>
-                  <h1>{album.name}</h1>
-                  <p className="small-text">
-                    {album.description.length > 300
-                      ? `${album.description.slice(0, 300)}...`
-                      : album.description}
-                  </p>
-                </div>
-              </div>
-
-              <div className="album-song">
-                <div className="icons d-flex align-items-center gap-5 ms-5 mt-3">
-                  <div
-                    style={{
-                      width: "40px",
-                      height: "40px",
-                      borderRadius: "50px",
-                      background: "#1db954",
-                      paddingLeft: "15px",
-                      paddingTop: "8px",
-                    }}
-                  >
-                    <FaPlay />
-                  </div>
-                  <div className="heart-icon">
-                    <CiHeart
-                      style={{
-                        fontSize: "40px",
-                      }}
-                    />
-                  </div>
-                  <div className="dots-icon">
-                    <CiMenuKebab
-                      style={{
-                        fontSize: "30px",
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <div className="main-content">
-                  {filteredSongs.length === 0 ? (
-                    <p className="no-songs-message text-center">
-                      Hiện không có bài hát nào thuộc album này
-                    </p>
-                  ) : (
-                    <div className="d-flex flex-wrap gap-2 w-100">
-                      {filteredSongs.map((song, index) => (
-                        <motion.div
-                          key={song._id}
-                          className="position-relative songcard mx-3 my-2 p-2 d-flex align-items-center"
-                        >
-                          <img
-                            src={song.imageURL}
-                            style={{ width: "80px", height: "80px" }}
-                            alt=""
-                            className="col-1 rounded-2 me-2"
-                          />
-                          <span className="play-song-icon">
-                            <FaPlay
-                              className="m-auto"
-                              onClick={() => addToContext(song, index)}
-                            />
-                          </span>
-                          <div className="song-info text-light col-5 d-flex justify-content-between flex-column">
-                            <p className="fw-bold ">{song.name}</p>
-                            <p
-                              className="details-link"
-                              style={{ color: "#aaa" }}
-                              onClick={() => {
-                                navigate(`/artistDetails/${song.artistId._id}`);
-                              }}
-                            >
-                              {song.artistId.name}
-                            </p>
-                          </div>
-                          <p className="col-2">{song.albumId.name}</p>
-                          <p className="col-2">{song.category}</p>
-                          <p className="col-2">
-                            {formatDuration(song.audioURL.length)}
-                          </p>
-                        </motion.div>
-                      ))}
+              {album ? (
+                <>
+                  <div className="details-page-info">
+                    <div className="details-info-img">
+                      <img src={album.imageURL} alt={album.name} />
                     </div>
-                  )}
-                </div>
-              </div>
+                    <div className="details-page-content">
+                      <p className="small-textBold">Album</p>
+                      <h1>{album.name}</h1>
+                      <p className="small-text">
+                        {album.description.length > 300
+                          ? `${album.description.slice(0, 300)}...`
+                          : album.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="album-song">
+                    <div className="icons d-flex align-items-center gap-5 ms-5 mt-3">
+                      <div
+                        style={{
+                          width: "40px",
+                          height: "40px",
+                          borderRadius: "50px",
+                          background: "#1db954",
+                          paddingLeft: "15px",
+                          paddingTop: "8px",
+                        }}
+                      >
+                        <FaPlay />
+                      </div>
+                      <div className="heart-icon">
+                        <CiHeart
+                          style={{
+                            fontSize: "40px",
+                          }}
+                        />
+                      </div>
+                      <div className="dots-icon">
+                        <CiMenuKebab
+                          style={{
+                            fontSize: "30px",
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="main-content">
+                      {filteredSongs.length === 0 ? (
+                        <p className="no-songs-message text-center">
+                          Hiện không có bài hát nào thuộc album này
+                        </p>
+                      ) : (
+                        <div className="d-flex flex-wrap gap-2 w-100">
+                          {filteredSongs.map((song, index) => (
+                            <motion.div
+                              key={song._id}
+                              className="position-relative songcard mx-3 my-2 p-2 d-flex align-items-center"
+                            >
+                              <img
+                                src={song.imageURL}
+                                style={{ width: "80px", height: "80px" }}
+                                alt=""
+                                className="col-1 rounded-2 me-2"
+                              />
+                              <span className="play-song-icon">
+                                <FaPlay
+                                  className="m-auto"
+                                  onClick={() => addToContext(song, index)}
+                                />
+                              </span>
+                              <div className="song-info text-light col-5 d-flex justify-content-between flex-column">
+                                <p className="fw-bold ">{song.name}</p>
+                                <p
+                                  className="details-link"
+                                  style={{ color: "#aaa" }}
+                                  onClick={() => {
+                                    navigate(
+                                      `/artistDetails/${song.artistId._id}`
+                                    );
+                                  }}
+                                >
+                                  {song.artistId.name}
+                                </p>
+                              </div>
+                              <p className="col-2">{song.albumId.name}</p>
+                              <p className="col-2">{song.category}</p>
+                              <p className="col-2">
+                                {formatDuration(song.audioURL.length)}
+                              </p>
+                            </motion.div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div>Loading...</div>
+              )}
             </div>
           </div>
         </div>
