@@ -1,5 +1,5 @@
 .user-info-card:hover {
-  background-color: rgb(90, 89, 89);
+  background-color: #363636;
   transition: 0.3s ease-in-out;
 }
 .btn-admin {

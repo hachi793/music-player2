@@ -55,7 +55,7 @@ function Header() {
               }
               alt=""
               className="rounded-pill"
-              style={{ width: "50px" }}
+              style={{ width: "50px", height: "50px" }}
             />
             {!user.profileImagePath && (
               <FaRegUserCircle style={{ width: "30px", height: "30px" }} />
