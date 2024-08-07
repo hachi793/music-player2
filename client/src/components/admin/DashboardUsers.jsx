@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useStateValue } from "../../context/stateProvider";
 import "../../styles/DashboardUsers.css";
 import { actionType } from "../../context/reducer";
-import { FaSearch, FaStar, FaRegUserCircle } from "react-icons/fa";
+import { FaSearch, FaRegUserCircle } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import moment from "moment";
 import { getAllUsers, updateUserRole, deleteUserById } from "../../api";
 import { useNavigate } from "react-router-dom";
 
 const DashboardUsers = () => {
-  const [{ allUsers }, dispatch] = useStateValue();
+  const [{ allUsers, user }, dispatch] = useStateValue();
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredUsers, setFilteredUsers] = useState([]);
 
@@ -52,7 +52,7 @@ const DashboardUsers = () => {
       <div
         className="position-relative w-100 d-flex flex-column justify-content-start align-items-center rounded-2 py-2"
         style={{
-          minHeight: "400px",
+          minHeight: "70vh",
           overflowY: "scroll",
           scrollbarWidth: "none", // Firefox
           msOverflowStyle: "none",
@@ -176,7 +176,7 @@ const DashboardUserCard = ({ data, fetchAllUsers }) => {
       className="user-info-card position-relative w-100 vh-200 rounded-2 d-flex align-items-center justify-content-between py-2 mx-3"
       style={{ cursor: "pointer", color: "#e5e5e5" }}
     >
-      {data._id !== user?._id && (
+      {data._id !== user?._id ? (
         <div
           className="btn-delete position-absolute rounded-2 d-flex align-items-center justify-content-center p-2 m-2"
           style={{ height: "8%", left: "5%" }}
@@ -184,14 +184,8 @@ const DashboardUserCard = ({ data, fetchAllUsers }) => {
         >
           <MdDelete className="text-danger" />
         </div>
-      )}
-      {data._id === user?._id && (
-        <div
-          className="btn-delete position-absolute rounded-2 d-flex align-items-center justify-content-center p-2 m-2"
-          style={{ height: "8%", left: "5%" }}
-        >
-          <FaStar style={{ color: "yellow" }} />
-        </div>
+      ) : (
+        <div className="btn-delete position-absolute rounded-2 d-flex align-items-center justify-content-center p-2 m-2"></div>
       )}
 
       <div
