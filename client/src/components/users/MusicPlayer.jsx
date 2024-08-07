@@ -117,7 +117,7 @@ const MusicPlayer = () => {
           style={{ height: "90px" }}
         >
           <div className="w-100 d-flex align-items-center  position-relative gap-2">
-            {allSongs && allSongs.length > 0 && (
+            {allSongs && (
               <>
                 <img
                   src={currentSong.imageURL}

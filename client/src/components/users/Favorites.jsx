@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { useStateValue } from "../../context/stateProvider";
-import Alert from "../admin/Alert";
 import "../../styles/NavBar.css";
 import "../../styles/Favorites.css";
 import { FaPlay, FaHeart } from "react-icons/fa";
@@ -17,7 +16,7 @@ import { useNavigate } from "react-router-dom";
 
 const Favorites = () => {
   const [
-    { allSongs, isSongPlaying, songIndex, alertType, favoriteSongs, user },
+    { allSongs, isSongPlaying, songIndex, favoriteSongs, user },
     dispatch,
   ] = useStateValue();
   const navigate = useNavigate();
@@ -115,10 +114,7 @@ const Favorites = () => {
             <div className="main-inner">
               <div className="playlist-page-info mx-3">
                 <div className="playlist-page-image">
-                  <img
-                    src="https://firebasestorage.googleapis.com/v0/b/reactjs-spotify.appspot.com/o/image%2Fcover_2.jpg?alt=media&token=5ce02fed-984d-4a4d-9527-198dcb79f677"
-                    alt="Playlist Cover"
-                  />
+                  <img src={user.profileImagePath} alt="Playlist Cover" />
                 </div>
                 <div className="playlist-page-content">
                   <p className="small-textBold">Playlist</p>
@@ -226,7 +222,6 @@ const Favorites = () => {
             </div>
           </div>
         </div>
-        {alertType && <Alert type={alertType} />}
       </div>
     </div>
   );
