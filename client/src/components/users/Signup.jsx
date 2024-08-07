@@ -1,82 +1,96 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/Signup.css";
 import { NavLink } from "react-bootstrap";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { storage } from "../../config/firebase.config";
+import { MdOutlineFileUpload } from "react-icons/md";
+import { signupUser } from "../../api";
+import { useStateValue } from "../../context/stateProvider";
+import { actionType } from "../../context/reducer";
 
 const Signup = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    profileImage: null,
-  });
-  console.log(formData);
-  const navigate = useNavigate();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [profileImage, setProfileImage] = useState(null);
+  const [profileImagePath, setProfileImagePath] = useState(null);
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
+  const [{ user }, dispatch] = useStateValue();
 
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-      [name]: name === "profileImage" ? files[0] : value,
-    });
+  const uploadProfileImage = (e) => {
+    const uploadedProfileImage = e.target.files[0];
+    setProfileImage(URL.createObjectURL(uploadedProfileImage));
+    uploadFile(uploadedProfileImage, setProfileImagePath);
+  };
+
+  const uploadFile = (file, setFileURL) => {
+    const fileName = `image/user/${Date.now()}-${file.name}`;
+    const storageRef = ref(storage, fileName);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    uploadTask.on(
+      "state_changed",
+      null,
+      (error) => {
+        console.error("Upload failed", error);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          setFileURL(downloadURL);
+        });
+      }
+    );
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = {};
 
-    if (!formData.email.trim()) {
-      validationErrors.email = "* Please input email";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      validationErrors.email = "* Email is not valid";
-    }
-
-    if (!formData.password.trim()) {
-      validationErrors.password = "* Please input password";
-    } else if (
-      formData.password.length < 10 ||
-      !/[A-Z]/.test(formData.password) ||
-      !/[!@#$%^&*()\\|,.<>?]+/.test(formData.password)
-    ) {
-      validationErrors.password =
-        "Password must have at least 10 letter, 1 capital letter and 1 special character";
-    }
-    if (!formData.confirmPassword.trim()) {
-      validationErrors.confirmPassword = "* Please confirm again password";
-    } else if (formData.confirmPassword !== formData.password) {
-      validationErrors.confirmPassword =
-        "Password is not match, please confirm again";
-    }
-
-    if (!formData.name.trim()) {
+    if (!name.trim()) {
       validationErrors.name = "* Please input name";
     }
-    // if (!formData.profileImage.trim()) {
-    //   validationErrors.profileImage = "Yêu cầu chọn ảnh đại diện";
-    // }
+    if (!email.trim()) {
+      validationErrors.email = "* Please input email";
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      validationErrors.email = "* Email is not valid";
+    }
+    if (!password.trim()) {
+      validationErrors.password = "* Please input password";
+    } else if (
+      password.length < 10 ||
+      !/[A-Z]/.test(password) ||
+      !/[!@#$%^&*()\\|,.<>?]+/.test(password)
+    ) {
+      validationErrors.password =
+        "Password must have at least 10 letters, 1 capital letter, and 1 special character";
+    }
+    if (!confirmPassword.trim()) {
+      validationErrors.confirmPassword = "* Please confirm password";
+    } else if (confirmPassword !== password) {
+      validationErrors.confirmPassword = "Passwords do not match";
+    }
+
     setErrors(validationErrors);
-    try {
-      const signup_form = new FormData();
 
-      for (var key in formData) {
-        signup_form.append(key, formData[key]);
+    if (Object.keys(validationErrors).length === 0) {
+      try {
+        const newUser = await signupUser({
+          name: name,
+          email: email,
+          profileImagePath: profileImagePath,
+          password: password,
+        });
+        dispatch({
+          type: actionType.SET_USER,
+          user: newUser,
+        });
+        navigate("/");
+      } catch (err) {
+        console.log("Signup failed", err.message);
       }
-
-      const response = await fetch("http://localhost:3001/auth/signup", {
-        method: "POST",
-        body: signup_form,
-      });
-
-      if (response.ok) {
-        navigate("/login");
-      } else {
-        console.log("Signed up failed");
-      }
-    } catch (err) {
-      console.log("Signed up failed", err.message);
     }
   };
 
@@ -84,22 +98,20 @@ const Signup = () => {
     <>
       <div>
         <header>
-          <header>
-            <div className="logo bg-black py-4 pe-0 ps-3">
-              <img
-                src="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_CMYK_White.png"
-                alt=""
-                style={{ width: "120px" }}
-              />
-            </div>
-          </header>
+          <div className="logo bg-black py-4 pe-0 ps-3">
+            <img
+              src="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_CMYK_White.png"
+              alt=""
+              style={{ width: "120px" }}
+            />
+          </div>
         </header>
       </div>
 
       <section
         className="d-flex justify-content-center align-items-center"
         style={{
-          background: "linear-gradient(rgba(11,1,1,0.9) 0% , rgba(0,0,0) 100%)",
+          background: "linear-gradient(rgba(11,1,1,0.9) 0%, rgba(0,0,0) 100%)",
         }}
       >
         <div
@@ -115,22 +127,18 @@ const Signup = () => {
           </h1>
 
           <div className="sign-up d-flex justify-content-center align-items-center fw-bold">
-            <form action="" onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit}>
               <div style={{ position: "relative" }}>
-                <label
-                  htmlFor=""
-                  className="text-white fs-6 mb-1 d-inline-block"
-                >
+                <label className="text-white fs-6 mb-1 d-inline-block">
                   What should we call you?
                 </label>
                 <input
                   type="text"
                   name="name"
                   placeholder="Enter your name"
-                  value={formData.name}
-                  onChange={handleChange}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                 />
-
                 {errors.name && (
                   <p
                     className="text-danger fw-normal py-1 px-2"
@@ -145,20 +153,16 @@ const Signup = () => {
               </div>
 
               <div style={{ position: "relative" }}>
-                <label
-                  htmlFor=""
-                  className="text-white fs-6 mb-1 d-inline-block"
-                >
+                <label className="text-white fs-6 mb-1 d-inline-block">
                   Email
                 </label>
                 <input
                   type="email"
                   name="email"
                   placeholder="Email"
-                  value={formData.email}
-                  onChange={handleChange}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
-
                 {errors.email && (
                   <p
                     className="text-danger fw-normal py-1 px-2 w-100"
@@ -173,20 +177,16 @@ const Signup = () => {
               </div>
 
               <div style={{ position: "relative" }}>
-                <label
-                  htmlFor=""
-                  className="text-white fs-6 mb-1 d-inline-block"
-                >
+                <label className="text-white fs-6 mb-1 d-inline-block">
                   Create a password
                 </label>
                 <input
                   type="password"
                   name="password"
                   placeholder="Create a password"
-                  value={formData.password}
-                  onChange={handleChange}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
-
                 {errors.password && (
                   <p
                     className="text-danger fw-normal py-1 px-2"
@@ -201,20 +201,16 @@ const Signup = () => {
               </div>
 
               <div style={{ position: "relative" }}>
-                <label
-                  htmlFor=""
-                  className="text-white fs-6 mb-1 d-inline-block"
-                >
+                <label className="text-white fs-6 mb-1 d-inline-block">
                   Confirm your password
                 </label>
                 <input
                   type="password"
                   name="confirmPassword"
                   placeholder="Enter your password again"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                 />
-
                 {errors.confirmPassword && (
                   <p
                     className="text-danger fw-normal py-1 px-2"
@@ -227,31 +223,15 @@ const Signup = () => {
                   </p>
                 )}
               </div>
-              <input
-                id="image"
-                type="file"
-                name="profileImage"
-                accept="image/*"
-                style={{ display: "none" }}
-                onChange={handleChange}
-              />
-              <label htmlFor="image" className=" d-flex ">
-                <img
-                  src="../assets/addImage.png"
-                  alt="add profile"
-                  style={{ width: "8%", height: "8%" }}
-                />
-                <p className="text-light ms-3">Upload your profile image</p>
-              </label>
 
-              {formData.profileImage && (
-                <img
-                  src={URL.createObjectURL(formData.profileImage)}
-                  alt="profile"
-                  onChange={handleChange}
-                  style={{ maxWidth: "80px" }}
-                />
+              {profileImage ? (
+                <div className="d-flex justify-content-center">
+                  <img src={profileImagePath} alt="" className="w-25 h-25" />
+                </div>
+              ) : (
+                <FileUploader onUpload={uploadProfileImage} fileType="image" />
               )}
+
               {errors.profileImage && (
                 <p
                   className="text-danger fw-normal py-1 px-2"
@@ -287,6 +267,27 @@ const Signup = () => {
         </div>
       </section>
     </>
+  );
+};
+
+const FileUploader = ({ onUpload, fileType }) => {
+  return (
+    <label className="h-100 d-flex justify-content-center align-items-center flex-column gap-1 text-light">
+      <MdOutlineFileUpload className="fs-4" />
+      <p>Click to upload {fileType}</p>
+      <input
+        type="file"
+        accept="image/*"
+        className="d-none"
+        onChange={onUpload}
+        style={{
+          width: "0",
+          height: "0",
+          position: "absolute",
+          overflow: "hidden",
+        }}
+      />
+    </label>
   );
 };
 

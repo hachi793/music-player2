@@ -4,21 +4,9 @@ import axios from "axios";
 const baseURL = "http://localhost:3001/";
 
 // User API
-export const signupUser = async (data, profileImage) => {
+export const signupUser = async (data) => {
   try {
-    const formData = new FormData();
-    formData.append("name", data.name);
-    formData.append("email", data.email);
-    formData.append("password", data.password);
-    if (profileImage) {
-      formData.append("profileImage", profileImage);
-    }
-
-    const res = await axios.post(`${baseURL}signup`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const res = await axios.post(`${baseURL}auth/signup`, data);
     return res.data.user;
   } catch (error) {
     console.error("Error signing up user:", error);
@@ -28,7 +16,7 @@ export const signupUser = async (data, profileImage) => {
 
 export const loginUser = async (email, password) => {
   try {
-    const res = await axios.post(`${baseURL}login`, { email, password });
+    const res = await axios.post(`${baseURL}auht/login`, { email, password });
     return res.data;
   } catch (error) {
     console.error("Error logging in user:", error);

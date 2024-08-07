@@ -20,23 +20,17 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 /* User Signup */
-router.post("/signup", upload.single("profileImage"), async (req, res) => {
+router.post("/signup", async (req, res) => {
   try {
-    const { name, email, password } = req.body;
-    const profileImage = req.file;
+    const { name, email, password, profileImagePath } = req.body;
 
-    if (!profileImage) {
-      return res.status(400).send("No file uploaded");
-    }
-
-    const profileImagePath = profileImage.path;
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(409).json({ message: "User already exists!" });
     }
 
-    /* Encrypt password */
-    const salt = await bcrypt.genSalt();
+    // Encrypt password
+    const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const newUser = new User({
@@ -45,6 +39,7 @@ router.post("/signup", upload.single("profileImage"), async (req, res) => {
       password: hashedPassword,
       role: "member",
       profileImagePath,
+      favoriteSongs: [],
     });
 
     await newUser.save();
