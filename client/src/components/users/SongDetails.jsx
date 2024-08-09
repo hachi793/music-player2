@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
 import "../../styles/SongDetails.css";
 import { useNavigate, useParams } from "react-router-dom";
-import { getCommentsBySongId, getSongById, saveNewComment } from "../../api";
+import {
+  deleteCommentsById,
+  getAllUsers,
+  getCommentsBySongId,
+  getSongById,
+  saveNewComment,
+} from "../../api";
 import { LuDot } from "react-icons/lu";
 import moment from "moment";
 import { FaHeart, FaPlay } from "react-icons/fa";
@@ -12,8 +18,9 @@ import { actionType } from "../../context/reducer";
 const SongDetails = () => {
   const { id } = useParams();
   const [song, setSong] = useState();
+  const [comments, setComments] = useState([]);
   const [content, setContent] = useState("");
-  const [{ user, allComments }, dispatch] = useStateValue();
+  const [{ user, allUsers }, dispatch] = useStateValue();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,13 +28,21 @@ const SongDetails = () => {
       const song = await getSongById(id);
       setSong(song);
       const comments = await getCommentsBySongId(id);
-      dispatch({
-        type: actionType.SET_ALL_COMMENTS,
-        allComments: comments,
-      });
+      setComments(comments);
     };
     fetchSongAndComments();
   }, [id, dispatch]);
+
+  useEffect(() => {
+    if (!allUsers || allUsers.length === 0) {
+      getAllUsers().then((data) => {
+        dispatch({
+          type: actionType.SET_ALL_USERS,
+          allUsers: data,
+        });
+      });
+    }
+  }, [allUsers, dispatch]);
 
   const saveComment = async () => {
     const data = {
@@ -36,24 +51,53 @@ const SongDetails = () => {
       content: content,
     };
     if (user._id && song._id && content) {
-      const res = await saveNewComment(data);
-      if (res) {
-        const comments = await getCommentsBySongId(song._id);
-        dispatch({
-          type: actionType.SET_ALL_COMMENTS,
-          allComments: comments,
+      saveNewComment(data)
+        .then((res) => {
+          if (res) {
+            getCommentsBySongId(song._id).then((comment) => {
+              if (comment) {
+                setComments(...comments, comment);
+              } else {
+                console.error("Failed to fetch comments of song");
+              }
+            });
+          } else {
+            console.error("Failed to save new comments");
+          }
+        })
+        .finally(() => {
+          setContent("");
         });
-        setContent("");
-      } else {
-        console.log("Failed to save new comment");
-      }
+    } else {
+      console.error("Required fields are missing");
     }
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       saveComment();
     }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    try {
+      const res = await deleteCommentsById(commentId);
+      if (res.success) {
+        const updatedComments = comments.filter(
+          (comment) => comment._id !== commentId
+        );
+        setComments(updatedComments);
+      } else {
+        console.error("Failed to delete comment: ", res.msg);
+      }
+    } catch (error) {
+      console.error("Error deleting comment:", error.message);
+    }
+  };
+
+  const findUserById = (userId) => {
+    const user = allUsers.find((user) => user._id === userId);
+    return user ? user : null;
   };
 
   return (
@@ -137,7 +181,7 @@ const SongDetails = () => {
                   <div
                     className="album-card d-flex gap-4 mx-4 my-1 p-2"
                     onClick={() =>
-                      navigate(`/artistDetails/${song.albumId._id}`)
+                      navigate(`/albumDetails/${song.albumId._id}`)
                     }
                   >
                     <img
@@ -146,7 +190,6 @@ const SongDetails = () => {
                       style={{
                         width: "5rem",
                         height: "5rem",
-                        borderRadius: "50%",
                       }}
                     />
                     <div className="d-flex flex-column justify-content-center">
@@ -154,7 +197,7 @@ const SongDetails = () => {
                       <p className="mb-0">{song.albumId.name}</p>
                     </div>
                   </div>
-
+                  {/* Comments section */}
                   <section
                     className="comment my-3 mx-3 p-2 border-5"
                     style={{ background: "#252525" }}
@@ -169,14 +212,72 @@ const SongDetails = () => {
                         }}
                         alt=""
                       />
-                      <input
-                        className="input-comment px-2 pt-2 text-light"
-                        type="text"
-                        placeholder="Write down your comment"
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
-                        onKeyPress={handleKeyPress}
-                      />
+                      <div className="input-comment d-flex justify-content-between py-2">
+                        <input
+                          className=" px-2 pt-2 text-light w-100"
+                          type="text"
+                          placeholder="Write down your comment"
+                          value={content}
+                          onChange={(e) => setContent(e.target.value)}
+                          onKeyDown={handleKeyDown}
+                        />
+                        <button
+                          className="py-1 text-light fw-lighter"
+                          onClick={saveComment}
+                        >
+                          Comment
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="comments-section">
+                      {comments &&
+                        comments
+                          .sort(
+                            (a, b) =>
+                              new Date(b.createdAt) - new Date(a.createdAt)
+                          )
+                          .map((comment) => {
+                            const commentUser = findUserById(comment.userId);
+                            return (
+                              <div
+                                key={comment._id}
+                                className="comment-item my-3"
+                              >
+                                {commentUser && (
+                                  <div className="d-flex gap-3 align-items-center position-relative">
+                                    <img
+                                      src={commentUser.profileImagePath}
+                                      style={{
+                                        borderRadius: "50%",
+                                        width: "3rem",
+                                        height: "3rem",
+                                      }}
+                                      alt=""
+                                    />
+                                    <div>
+                                      <p className="small-text">
+                                        {commentUser.name}
+                                        <span className="small-text ms-3">
+                                          {moment(
+                                            new Date(comment.createdAt)
+                                          ).format("YYYY-MM-DD")}
+                                        </span>
+                                      </p>
+                                      <p>{comment.content}</p>
+                                    </div>
+                                    {/* Delete comment option */}
+                                    {commentUser._id === user._id && (
+                                      <div className="delete-menu position-relative">
+                                        <p>Delete</p>
+                                        <p>Cancel</p>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
                     </div>
                   </section>
                 </>

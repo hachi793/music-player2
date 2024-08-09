@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useStateValue } from "../../context/stateProvider";
-import Alert from "../admin/Alert";
+import Alert from "../../pages/admin/Alert";
 import "../../styles/UpdateProfile.css";
 import { updateUserDetails, updateUserPassword } from "../../api";
 import { useNavigate } from "react-router-dom";

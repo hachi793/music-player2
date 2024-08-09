@@ -13,6 +13,7 @@
 }
 .details-link:hover {
   text-decoration: underline;
+  cursor: pointer;
 }
 /* .btn-delete:hover {
   background-color: red;

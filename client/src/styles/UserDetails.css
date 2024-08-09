@@ -9,12 +9,16 @@
   display: flex;
   flex-direction: column;
 }
+.user-detail-page .main-inner p {
+  margin-bottom: 0;
+}
 
 .user-detail-page .main-inner .details-page-info {
   text-align: center;
   padding: 1.5rem;
   display: flex;
   background: linear-gradient(rgba(0, 0, 0, 0.5), #4e4d4d 90%);
+  position: relative;
 }
 
 .user-detail-page .main-inner .details-page-info .details-info-img img {
@@ -39,7 +43,7 @@
   font-weight: 300;
 }
 .user-detail-page .main-inner .details-page-content h1 {
-  font-size: 5rem;
+  font-size: 3rem;
   margin: 0;
   line-height: 1;
   letter-spacing: -3px;
