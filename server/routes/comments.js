@@ -60,7 +60,7 @@ router.post("/delete/:id", async (req, res) => {
   }
 });
 
-router.get("/getComments/:songId", async (req, res) => {
+router.get("/getCommentsBySongId/:songId", async (req, res) => {
   const { songId } = req.params;
   try {
     const comments = await Comment.find({ songId })
@@ -76,4 +76,22 @@ router.get("/getComments/:songId", async (req, res) => {
     return res.status(400).send({ success: false, msg: error.message });
   }
 });
+
+router.get("/getCommentsByUserId/:userId", async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const comments = await Comment.find({ userId })
+      .populate("userId")
+      .populate("songId");
+
+    if (comments) {
+      return res.status(200).send({ success: true, comments });
+    } else {
+      return res.status(404).send({ success: false, msg: "No comment found" });
+    }
+  } catch (error) {
+    return res.status(400).send({ success: false, msg: error.message });
+  }
+});
+
 module.exports = router;

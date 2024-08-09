@@ -273,3 +273,56 @@ export const deleteAlbumById = async (id) => {
     return null;
   }
 };
+
+// Comment API
+export const saveNewComment = async (data) => {
+  try {
+    const res = await axios.post(`${baseURL}comments/save`, data);
+    return res.data.comment;
+  } catch (error) {
+    console.error("Error saving new comment:", error);
+    return null;
+  }
+};
+
+export const getAllComments = async (data) => {
+  try {
+    const res = await axios.get(`${baseURL}comments/getAll`, data);
+    return res.data.comments;
+  } catch (error) {
+    console.error("Error fetching all comments:", error);
+    return [];
+  }
+};
+export const getCommentsBySongId = async (songId) => {
+  try {
+    const res = await axios.get(
+      `${baseURL}comments/getCommentsBySongId/${songId}`
+    );
+    return res.data.comments;
+  } catch (error) {
+    console.error(`Error fetching comments for song with id ${songId}:`, error);
+    return [];
+  }
+};
+
+export const getCommentsByUserId = async (userId) => {
+  try {
+    const res = await axios.get(
+      `${baseURL}comments/getCommentsByUserId/${userId}`
+    );
+    return res.data.comments;
+  } catch (error) {
+    console.error(`Error fetch comments of ${userId}`, error);
+    return [];
+  }
+};
+
+export const deleteCommentsById = async (id) => {
+  try {
+    const res = await axios.delete(`${baseURL}comments/delete/${id}`);
+    return res.data;
+  } catch (error) {
+    console.error("Error deleting comment", error);
+  }
+};
