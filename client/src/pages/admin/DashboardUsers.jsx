@@ -9,7 +9,7 @@ import { getAllUsers, updateUserRole, deleteUserById } from "../../api";
 import { useNavigate } from "react-router-dom";
 
 const DashboardUsers = () => {
-  const [{ allUsers, user }, dispatch] = useStateValue();
+  const [{ allUsers }, dispatch] = useStateValue();
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredUsers, setFilteredUsers] = useState([]);
 

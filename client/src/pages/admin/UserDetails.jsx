@@ -5,6 +5,7 @@ import {
   deleteUserById,
   getAllSongs,
   getAllUsers,
+  getCommentsByUserId,
   getUserById,
   updateUserRole,
 } from "../../api";
@@ -21,16 +22,18 @@ const UserDetails = () => {
   const [{ user, isSongPlaying, songIndex, allSongs }, dispatch] =
     useStateValue();
   const [userData, setUserData] = useState(null);
+  const [comments, setComments] = useState([]);
   const [isUserRoleUpdated, setIsUserRoleUpdated] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
       const data = await getUserById(id);
       setUserData(data);
+      const comments = await getCommentsByUserId(id);
+      setComments(comments);
     };
-    console.log(userData);
     fetchUser();
-  }, [id]);
+  }, [id, dispatch]);
 
   const fetchAllUsers = async () => {
     try {
@@ -111,6 +114,11 @@ const UserDetails = () => {
     return `${minutes}:${formattedSeconds}`;
   };
 
+  const findSongById = (songId) => {
+    const song = allSongs.find((song) => song._id === songId);
+    return song ? song : null;
+  };
+
   return (
     <div className="outerWrap">
       <div className="app">
@@ -131,7 +139,7 @@ const UserDetails = () => {
                           Email:{" "}
                           <span className="small-text">{userData.email}</span>
                         </p>
-
+                        {/* Role change */}
                         <p>
                           Role:{" "}
                           <span className="small-text position-relative">
@@ -182,7 +190,7 @@ const UserDetails = () => {
                             </div>
                           )}
                         </p>
-
+                        {/* Create At */}
                         <p>
                           Created at:{" "}
                           <span className="small-text">
@@ -195,7 +203,7 @@ const UserDetails = () => {
                         {userData._id !== user._id && (
                           <p
                             className="btn position-absolute rounded-5 d-flex p-2 m-2 fs-3 text-bg-danger"
-                            style={{ right: "3%", bottom: "50%" }}
+                            style={{ right: "3%", bottom: "5%" }}
                             onClick={handleDeleteUser}
                           >
                             <MdDelete className="text-light" />
@@ -204,6 +212,7 @@ const UserDetails = () => {
                       </div>
                     </div>
 
+                    {/* Favorite Song */}
                     <div className="more-info m-4">
                       <div className="small-text">
                         {userData.name}'s favorite songs:
@@ -259,6 +268,64 @@ const UserDetails = () => {
                                 </p>
                               </motion.div>
                             ))}
+                      </div>
+                    </div>
+
+                    {/* Comments */}
+                    <div className="m-4">
+                      <p className="small-text">
+                        All comments of {userData.name} :
+                      </p>
+                      <div className="comments-section mx-3">
+                        {comments &&
+                          comments
+                            .sort(
+                              (a, b) =>
+                                new Date(b.createdAt) - new Date(a.createdAt)
+                            )
+                            .map((comment) => {
+                              const song = findSongById(comment.songId);
+                              return (
+                                <div
+                                  key={comment._id}
+                                  className="comment-item my-3"
+                                >
+                                  {user && (
+                                    <div className="d-flex gap-3 align-items-center">
+                                      <img
+                                        src={song.imageURL}
+                                        style={{
+                                          borderRadius: "50%",
+                                          width: "3rem",
+                                          height: "3rem",
+                                        }}
+                                        alt=""
+                                      />
+                                      <div>
+                                        <p className="small-text d-flex">
+                                          <div
+                                            className="details-link"
+                                            onClick={() =>
+                                              navigate(
+                                                `/songDetails/${song._id}`
+                                              )
+                                            }
+                                          >
+                                            {song.name}
+                                          </div>
+                                          <p className="small-text ms-3">
+                                            {moment(
+                                              new Date(comment.createdAt)
+                                            ).format("YYYY-MM-DD")}
+                                          </p>
+                                        </p>
+                                        <p>{comment.content}</p>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
                       </div>
                     </div>
                   </>

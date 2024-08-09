@@ -7,12 +7,13 @@ import Layout from "./Layout";
 import Main from "./components/home/Main";
 import Music from "./components/music/Music";
 import Premium from "./components/premium/Premium";
-import Dashboard from "./components/admin/Dashboard";
+import Dashboard from "./pages/admin/Dashboard";
 import UpdateProfile from "./components/users/UpdateProfile";
 import AlbumDetails from "./components/users/AlbumDetails";
 import ArtistDetails from "./components/users/ArtistDetails";
 import Favorites from "./components/users/Favorites";
-import UserDetails from "./components/admin/UserDetails";
+import UserDetails from "./pages/admin/UserDetails";
+import SongDetails from "./components/users/SongDetails";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
             <Route path="/albumDetails/:id" element={<AlbumDetails />} />
             <Route path="/artistDetails/:id" element={<ArtistDetails />} />
             <Route path="/userDetails/:id" element={<UserDetails />} />
+            <Route path="/songDetails/:id" element={<SongDetails />} />
           </Route>
         </Route>
       </Routes>
