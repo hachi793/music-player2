@@ -12,4 +12,5 @@ export const initialState = {
   isSongPlaying: false,
   songIndex: 0,
   favoriteSongs: [],
+  allComments: [],
 };

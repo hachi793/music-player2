@@ -5,6 +5,7 @@ export const actionType = {
   SET_ALL_ALBUMS: "SET_ALL_ALBUMS",
   SET_ALL_SONGS: "SET_ALL_SONGS",
   SET_FAVORITE_SONGS: "SET_FAVORITE_SONGS",
+  SET_ALL_COMMENTS: "SET_ALL_COMMENTS",
 
   SET_FILTER_TERM: "SET_FILTER_TERM",
   SET_ARTIST_FILTER: "SET_ARTIST_FILTER",
@@ -52,6 +53,11 @@ const reducer = (state, action) => {
       return {
         ...state,
         favoriteSongs: action.favoriteSongs,
+      };
+    case actionType.SET_ALL_COMMENTS:
+      return {
+        ...state,
+        allComments: action.allComments,
       };
 
     // Filter case
