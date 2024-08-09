@@ -4,7 +4,7 @@ import Login from "./components/users/Login";
 import { Routes, Route } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
 import Layout from "./Layout";
-import Main from "./components/home/Main";
+import Home from "./components/home/Home";
 import Music from "./components/music/Music";
 import Premium from "./components/premium/Premium";
 import Dashboard from "./pages/admin/Dashboard";
@@ -22,7 +22,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route element={<Layout />}>
-          <Route path="/" element={<Main />} />
+          <Route path="/" element={<Home />} />
         </Route>
         {/*Private Routes */}
         <Route element={<PrivateRoute />}>
