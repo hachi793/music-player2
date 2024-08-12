@@ -9,7 +9,6 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { actionType } from "../../context/reducer";
-import { MdDelete, MdOutlineFileUpload } from "react-icons/md";
 import { motion } from "framer-motion";
 import { useNavigate, useParams } from "react-router-dom";
 import UploadImage from "../../components/upload/UploadImage";

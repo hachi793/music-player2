@@ -5,7 +5,7 @@ import { NavLink } from "react-router-dom";
 import { useStateValue } from "../../context/stateProvider";
 import { getAllSongs } from "../../api";
 import { actionType } from "../../context/reducer";
-import SongCard from "./SongCard";
+import SongCard from "../../components/card/SongCard";
 
 const DashboardSongs = () => {
   const [songFilter, setSongFilter] = useState("");
@@ -64,22 +64,14 @@ const DashboardSongs = () => {
           Không có kết quả trùng khớp
         </div>
       ) : (
-        <SongContainer data={filteredSongs} />
+        <div className="w-100 flex flex-wrap gap-2 justify-content-evenly align-items-center">
+          {filteredSongs &&
+            filteredSongs.map((song, i) => (
+              <SongCard key={song._id} data={song} index={i} type="song" />
+            ))}
+        </div>
       )}
     </div>
-  );
-};
-
-export const SongContainer = ({ data }) => {
-  return (
-    <>
-      <div className="w-100 flex flex-wrap gap-2 justify-content-evenly align-items-center">
-        {data &&
-          data.map((song, i) => (
-            <SongCard key={song._id} data={song} index={i} type="song" />
-          ))}
-      </div>
-    </>
   );
 };
 

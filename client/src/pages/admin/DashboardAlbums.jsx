@@ -5,7 +5,7 @@ import { useStateValue } from "../../context/stateProvider";
 import { NavLink } from "react-router-dom";
 import { IoAdd } from "react-icons/io5";
 import { FaSearch } from "react-icons/fa";
-import AlbumCard from "./AlbumCard";
+import AlbumCard from "../../components/card/AlbumCard";
 
 const DashboardAlbums = () => {
   const [{ allAlbums }, dispatch] = useStateValue();
@@ -61,23 +61,15 @@ const DashboardAlbums = () => {
             />
           </div>
         </div>
-        <AlbumContainer data={filteredAlbums} />
-      </div>
-    </>
-  );
-};
-
-export const AlbumContainer = ({ data }) => {
-  return (
-    <>
-      <div className="d-flex flex-wrap gap-2 justify-content-center ">
-        {data && data.length > 0 ? (
-          data.map((album, i) => (
-            <AlbumCard key={album._id} data={album} index={i} type="album" />
-          ))
-        ) : (
-          <p className="text-light">Không có kết quả trùng khớp</p>
-        )}
+        <div className="d-flex flex-wrap gap-2 justify-content-center ">
+          {filteredAlbums && filteredAlbums.length > 0 ? (
+            filteredAlbums.map((album, i) => (
+              <AlbumCard key={album._id} data={album} index={i} type="album" />
+            ))
+          ) : (
+            <p className="text-light">Không có kết quả trùng khớp</p>
+          )}
+        </div>
       </div>
     </>
   );

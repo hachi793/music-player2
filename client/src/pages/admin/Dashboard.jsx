@@ -15,7 +15,7 @@ import UpdateArtist from "./UpdateArtist";
 import UpdateSong from "./UpdateSong";
 
 const Dashboard = () => {
-  const [{ alertType, user }] = useStateValue();
+  const [{ user }] = useStateValue();
   return (
     <>
       <div className="outerWrap">
@@ -57,8 +57,6 @@ const Dashboard = () => {
               </Routes>
             </div>
           </div>
-
-          {alertType && <Alert type={alertType} />}
         </div>
       </div>
     </>

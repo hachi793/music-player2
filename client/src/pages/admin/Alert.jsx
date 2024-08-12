@@ -16,13 +16,13 @@ const Alert = ({ type }) => {
     >
       {type === "success" && (
         <div className="d-flex align-items-center justify-content-center">
-          <p>Data saved</p>
+          <p className="mb-0">Data saved</p>
         </div>
       )}
 
       {type === "danger" && (
         <div className="d-flex align-items-center justify-content-center">
-          <p>Error , Data not saved</p>
+          <p className="mb-0">Error , Data not saved</p>
         </div>
       )}
     </div>

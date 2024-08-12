@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getAllArtists } from "../../api";
 import { actionType } from "../../context/reducer";
 import { useStateValue } from "../../context/stateProvider";
-import ArtistCard from "./ArtistCard";
+import ArtistCard from "../../components/card/ArtistCard";
 import { NavLink } from "react-router-dom";
 import { IoAdd } from "react-icons/io5";
 import { FaSearch } from "react-icons/fa";
@@ -60,18 +60,17 @@ const DashboardArtists = () => {
           />
         </div>
       </div>
-      <ArtistContainer data={filteredArtists} />
-    </div>
-  );
-};
-
-export const ArtistContainer = ({ data }) => {
-  return (
-    <div className="w-100 d-flex flex-wrap gap-2 justify-content-center">
-      {data &&
-        data.map((artist, i) => (
-          <ArtistCard key={artist._id} data={artist} index={i} type="artist" />
-        ))}
+      <div className="w-100 d-flex flex-wrap gap-2 justify-content-center">
+        {filteredArtists &&
+          filteredArtists.map((artist, i) => (
+            <ArtistCard
+              key={artist._id}
+              data={artist}
+              index={i}
+              type="artist"
+            />
+          ))}
+      </div>
     </div>
   );
 };
