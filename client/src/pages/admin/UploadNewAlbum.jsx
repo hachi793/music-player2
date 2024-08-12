@@ -9,9 +9,10 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { actionType } from "../../context/reducer";
-import { MdDelete, MdOutlineFileUpload } from "react-icons/md";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import SaveButton from "../../components/upload/SaveButton";
+import UploadImage from "../../components/upload/UploadImage";
 
 const UploadNewAlbum = () => {
   const [albumImageCover, setAlbumImageCover] = useState(null);
@@ -89,41 +90,11 @@ const UploadNewAlbum = () => {
       <p className="fw-semibold fs-5">New Album Details</p>
 
       <div className="w-100 d-flex">
-        <div
-          className="upload-box rounded-2 w-50"
-          style={{
-            height: "50vh",
-            border: "2px solid #8b8989",
-            backgroundColor: "#323232",
-            cursor: "pointer",
-          }}
-        >
-          {albumImageCover ? (
-            <div className="position-relative w-100 h-100 overflow-hidden rounded-3">
-              <img
-                src={albumImageCover}
-                className="w-100 h-100 object-fit-fill"
-                alt="Album Cover"
-              />
-              <button
-                className="btn position-absolute rounded-circle border-0 bg-danger text-light fs-5"
-                style={{
-                  bottom: "3%",
-                  right: "3%",
-                  outline: "none",
-                  transition: "ease-in-out",
-                  border: "none",
-                  paddingBottom: "10px",
-                }}
-                onClick={() => deleteFileObject()}
-              >
-                <MdDelete className="text-light" />
-              </button>
-            </div>
-          ) : (
-            <FileUploader onUpload={uploadAlbumImage} fileType="image" />
-          )}
-        </div>
+        <UploadImage
+          imageCover={albumImageCover}
+          uploadImage={uploadAlbumImage}
+          deleteFileObject={deleteFileObject}
+        />
         <div className="ms-3 w-50">
           <input
             type="text"
@@ -144,44 +115,8 @@ const UploadNewAlbum = () => {
         </div>
       </div>
 
-      <div className="my-3 w-100 text-end">
-        <button
-          className="btn btn-primary rounded-2 text-capitalize w-25 py-3 text-light fw-bold"
-          style={{
-            backgroundColor: "#329f08",
-            border: "none",
-            outline: "none",
-          }}
-          onClick={saveAlbum}
-          disabled={isLoading}
-        >
-          {isLoading ? "Saving..." : "Save Album"}
-        </button>
-      </div>
+      <SaveButton saving={saveAlbum} isLoading={isLoading} />
     </motion.div>
-  );
-};
-
-const FileUploader = ({ onUpload, fileType }) => {
-  return (
-    <>
-      <label className="h-100 d-flex justify-content-center align-items-center flex-column gap-1">
-        <MdOutlineFileUpload className="fs-4" />
-        <p>Click to upload {fileType}</p>
-        <input
-          type="file"
-          className="d-none"
-          accept={fileType === "image" ? "image/*" : "audio/*"}
-          onChange={onUpload}
-          style={{
-            width: "0",
-            height: "0",
-            position: "absolute",
-            overflow: "hidden",
-          }}
-        />
-      </label>
-    </>
   );
 };
 

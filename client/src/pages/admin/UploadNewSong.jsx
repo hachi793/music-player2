@@ -11,10 +11,12 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { actionType } from "../../context/reducer";
-import { MdDelete, MdOutlineFileUpload } from "react-icons/md";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import "../../styles/UpdateNewSong.css";
+import UploadImage from "../../components/upload/UploadImage";
+import UploadAudio from "../../components/upload/UploadAudio";
+import SaveButton from "../../components/upload/SaveButton";
 
 const UploadNewSong = () => {
   const [songName, setSongName] = useState("");
@@ -39,7 +41,7 @@ const UploadNewSong = () => {
   const navigate = useNavigate();
 
   const deleteFileObject = (type) => {
-    if (type === "songImage") {
+    if (type === "Image") {
       const deleteRef = ref(storage, songImageCoverURL);
       deleteObject(deleteRef).then(() => {
         setSongImageCover(null);
@@ -165,113 +167,20 @@ const UploadNewSong = () => {
       </div>
 
       <div className="w-100 d-flex">
-        <div
-          className="upload-box rounded-2 w-50"
-          style={{
-            height: "50vh",
-            border: "2px solid #8b8989",
-            backgroundColor: "#323232",
-            cursor: "pointer",
-          }}
-        >
-          {songImageCover ? (
-            <div className="position-relative w-100 h-100 overflow-hidden rounded-3">
-              <img
-                src={songImageCover}
-                className="w-100 h-100 object-fit-fill"
-                alt=""
-              />
-              <button
-                className="btn position-absolute rounded-circle border-0 bg-danger text-light fs-5"
-                style={{
-                  bottom: "3%",
-                  right: "3%",
-                  outline: "none",
-                  transition: "ease-in-out",
-                  border: "none",
-                  paddingBottom: "10px",
-                }}
-                onClick={() => deleteFileObject("songImage")}
-              >
-                <MdDelete className="text-light" />
-              </button>
-            </div>
-          ) : (
-            <FileUploader onUpload={uploadSongImage} fileType="image" />
-          )}
-        </div>
-
-        <div
-          className="upload-box rounded-2 w-50 ms-3"
-          style={{
-            height: "50vh",
-            border: "2px solid #8b8989",
-            backgroundColor: "#323232",
-            cursor: "pointer",
-          }}
-        >
-          {songAudio ? (
-            <div className="position-relative w-100 h-100 overflow-hidden rounded-3 d-flex justify-content-center align-items-center">
-              <audio controls className="w-75">
-                <source src={songAudio} type="audio/mp3" />
-              </audio>
-              <button
-                className="btn position-absolute rounded-circle border-0 bg-danger text-light fs-5"
-                style={{
-                  bottom: "3%",
-                  right: "3%",
-                  outline: "none",
-                  transition: "ease-in-out",
-                  border: "none",
-                  paddingBottom: "10px",
-                }}
-                onClick={() => deleteFileObject("songAudio")}
-              >
-                <MdDelete className="text-light" />
-              </button>
-            </div>
-          ) : (
-            <FileUploader onUpload={uploadSongAudio} fileType="audio" />
-          )}
-        </div>
-      </div>
-      <div className="my-3 w-100 text-end">
-        <button
-          className="btn btn-primary rounded-2 text-capitalize w-25 py-3 text-light fw-bold"
-          style={{
-            backgroundColor: "#329f08",
-            border: "none",
-            outline: "none",
-          }}
-          onClick={saveSong}
-        >
-          {isLoading ? "Saving..." : "Save Song"}
-        </button>
-      </div>
-    </motion.div>
-  );
-};
-
-const FileUploader = ({ onUpload, fileType }) => {
-  return (
-    <>
-      <label className="h-100 d-flex justify-content-center align-items-center flex-column gap-1">
-        <MdOutlineFileUpload className="fs-4" />
-        <p>Click to upload {fileType}</p>
-        <input
-          type="file"
-          className="d-none"
-          accept={fileType === "image" ? "image/*" : "audio/*"}
-          onChange={onUpload}
-          style={{
-            width: "0",
-            height: "0",
-            position: "absolute",
-            overflow: "hidden",
-          }}
+        <UploadImage
+          imageCover={songImageCover}
+          uploadImage={uploadSongImage}
+          deleteFileObject={deleteFileObject}
         />
-      </label>
-    </>
+
+        <UploadAudio
+          songAudio={songAudio}
+          uploadSongAudio={uploadSongAudio}
+          deleteFileObject={deleteFileObject}
+        />
+      </div>
+      <SaveButton saving={saveSong} isLoading={isLoading} />
+    </motion.div>
   );
 };
 
