@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { FaPlay } from "react-icons/fa";
 
-const UserAlbumCard = ({ data, index, type }) => {
+const UserAlbumCard = ({ data, index }) => {
   const navigate = useNavigate();
 
   return (

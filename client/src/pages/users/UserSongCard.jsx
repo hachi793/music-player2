@@ -8,7 +8,7 @@ import { FaHeart, FaPlay } from "react-icons/fa";
 import { CiHeart } from "react-icons/ci";
 import { addToFavorite, removeFromFavorite } from "../../api";
 
-const UserSongCard = ({ data, index, type }) => {
+const UserSongCard = ({ data, index }) => {
   const [{ isSongPlaying, songIndex, user }, dispatch] = useStateValue();
   const navigate = useNavigate();
   const [favoriteSongs, setFavoriteSongs] = useState([]);

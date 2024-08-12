@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useStateValue } from "../../context/stateProvider";
-import "../../styles/AlbumDetails.css";
 import { getAlbumById, getAllSongs } from "../../api";
 import { useParams } from "react-router-dom";
-import { FaPlay } from "react-icons/fa";
-import { CiHeart, CiMenuKebab } from "react-icons/ci";
 import { actionType } from "../../context/reducer";
 import UserSongCard from "./UserSongCard";
+import Icons from "../../components/details/Icons";
+import Hero from "../../components/details/Hero";
 
 const AlbumDetails = () => {
   const { id } = useParams();
@@ -48,51 +47,9 @@ const AlbumDetails = () => {
             <div className="main-inner">
               {album ? (
                 <>
-                  <div className="details-page-info">
-                    <div className="details-info-img">
-                      <img src={album.imageURL} alt={album.name} />
-                    </div>
-                    <div className="details-page-content">
-                      <p className="small-textBold">Album</p>
-                      <h1>{album.name}</h1>
-                      <p className="small-text">
-                        {album.description.length > 300
-                          ? `${album.description.slice(0, 300)}...`
-                          : album.description}
-                      </p>
-                    </div>
-                  </div>
-
+                  <Hero data={album} type={"Album"} />
                   <div className="album-song">
-                    <div className="icons d-flex align-items-center gap-5 ms-5 mt-3">
-                      <div
-                        style={{
-                          width: "40px",
-                          height: "40px",
-                          borderRadius: "50px",
-                          background: "#1db954",
-                          paddingLeft: "15px",
-                          paddingTop: "8px",
-                        }}
-                      >
-                        <FaPlay />
-                      </div>
-                      <div className="heart-icon">
-                        <CiHeart
-                          style={{
-                            fontSize: "40px",
-                          }}
-                        />
-                      </div>
-                      <div className="dots-icon">
-                        <CiMenuKebab
-                          style={{
-                            fontSize: "30px",
-                          }}
-                        />
-                      </div>
-                    </div>
-
+                    <Icons data={album} />
                     <div className="main-content">
                       {filteredSongs.length === 0 ? (
                         <p className="no-songs-message text-center">

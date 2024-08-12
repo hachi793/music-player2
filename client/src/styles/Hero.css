@@ -1,0 +1,41 @@
+.details-page-info {
+  text-align: center;
+  padding: 1.5rem;
+  display: flex;
+  background: linear-gradient(rgba(0, 0, 0, 0.5), #4e4d4d 90%);
+}
+
+.details-page-info .details-info-img img {
+  width: 15rem;
+  height: 15rem;
+  object-fit: cover;
+}
+.details-page-content {
+  text-align: left;
+  padding: 1.5rem 2rem;
+}
+.small-textBold {
+  font-size: 0.8rem;
+  color: #b3b3b3;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+.small-text {
+  font-size: 0.8rem;
+  color: #b3b3b3;
+  font-weight: 300;
+}
+.details-page-content h1 {
+  font-size: 3rem;
+  margin: 0;
+  line-height: 1;
+  letter-spacing: -3px;
+}
+.play-song-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50px;
+  background: #1db954;
+  margin: auto;
+}

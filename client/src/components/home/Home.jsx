@@ -4,13 +4,13 @@ import "../../styles/SongCard.css";
 import { getAllAlbums, getAllArtists, getAllSongs } from "../../api";
 import { actionType } from "../../context/reducer";
 import { useStateValue } from "../../context/stateProvider";
-import { FaChevronRight, FaSearch } from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
+import UserArtistCard from "../../pages/users/UserArtistCard";
+import UserAlbumCard from "../../pages/users/UserAlbumCard";
+import UserSongCard from "../../pages/users/UserSongCard";
+import SeeMore from "../details/SeeMore";
 
-import UserSongCard from "../users/UserSongCard";
-import UserArtistCard from "../users/UserArtistCard";
-import UserAlbumCard from "../users/UserAlbumCard";
-
-const Main = () => {
+const Home = () => {
   const [{ allArtists, allSongs, allAlbums }, dispatch] = useStateValue();
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
@@ -113,19 +113,10 @@ const Main = () => {
           {/* Album */}
           {filteredAlbums.length > 0 && (
             <div className="main-content">
-              <div className="d-flex justify-content-between align-items-center">
-                <h1 className="mb-0">Albums</h1>
-                <div className="text-uppercase d-flex align-items-center gap-2">
-                  <div>See more</div>
-                  <FaChevronRight
-                    className="rounded-pill"
-                    style={{ backgroundColor: "#282828" }}
-                  />
-                </div>
-              </div>
+              <SeeMore type={"Album"} />
               <div className="card-wrap gap-2">
                 {filteredAlbums.map((album, index) => (
-                  <UserAlbumCard data={album} index={index} type={album} />
+                  <UserAlbumCard data={album} index={index} />
                 ))}
               </div>
             </div>
@@ -134,19 +125,10 @@ const Main = () => {
           {/* Artist */}
           {filteredArtists.length > 0 && (
             <div className="main-content">
-              <div className="d-flex justify-content-between align-items-center">
-                <h1 className="mb-0">Artists</h1>
-                <div className="text-uppercase d-flex align-items-center gap-2">
-                  <div>See more</div>
-                  <FaChevronRight
-                    className="rounded-pill"
-                    style={{ backgroundColor: "#282828" }}
-                  />
-                </div>
-              </div>
+              <SeeMore type={"Artist"} />
               <div className="card-wrap gap-2">
                 {filteredArtists.slice(0, 5).map((artist, index) => (
-                  <UserArtistCard data={artist} index={index} type={artist} />
+                  <UserArtistCard data={artist} index={index} />
                 ))}
               </div>
             </div>
@@ -155,25 +137,11 @@ const Main = () => {
           {/* Song */}
           {filteredSongs.length > 0 && (
             <div className="main-content">
-              <div className="d-flex justify-content-between align-items-center">
-                <h1 className="mb-0">Songs</h1>
-                <div className="text-uppercase d-flex align-items-center gap-2">
-                  <div>See more</div>
-                  <FaChevronRight
-                    className="rounded-pill"
-                    style={{ backgroundColor: "#282828" }}
-                  />
-                </div>
-              </div>
+              <SeeMore type={"Song"} />
               <div className="sub-text">What's your taste?</div>
               <div className="d-flex flex-wrap gap-2 w-100">
                 {filteredSongs.map((song, index) => (
-                  <UserSongCard
-                    key={song._id}
-                    data={song}
-                    index={index}
-                    type={song}
-                  />
+                  <UserSongCard key={song._id} data={song} index={index} />
                 ))}
               </div>
             </div>
@@ -184,4 +152,4 @@ const Main = () => {
   );
 };
 
-export default Main;
+export default Home;

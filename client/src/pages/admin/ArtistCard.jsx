@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 
 const ArtistCard = ({ data, index, type }) => {
   const [isDelete, setIsDelete] = useState(false);
-  const [{ alertType, allAlbums, allArtist }, dispatch] = useStateValue();
+  const [{ allArtist }, dispatch] = useStateValue();
   const [artists, setArtists] = useState([]);
   const navigate = useNavigate();
 
@@ -20,15 +20,6 @@ const ArtistCard = ({ data, index, type }) => {
       setArtists(data.artist);
     });
   }, [artists, dispatch]);
-
-  // useEffect(() => {
-  //   getAllArtists().then((data) => {
-  //     dispatch({
-  //       type: actionType.SET_ALL_ARTISTS,
-  //       allArtist: data.artist,
-  //     });
-  //   });
-  // }, [allArtist]);
 
   const deleteItem = (itemData) => {
     deleteArtistById(itemData._id).then((res) => {

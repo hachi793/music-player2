@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
-import "../../styles/ArtistDetails.css";
 import { getAllSongs, getArtistById } from "../../api";
 import { useParams } from "react-router-dom";
-import { FaPlay } from "react-icons/fa";
-import { CiHeart, CiMenuKebab } from "react-icons/ci";
 import { useStateValue } from "../../context/stateProvider";
 import { actionType } from "../../context/reducer";
 import UserSongCard from "./UserSongCard";
+import Icons from "../../components/details/Icons";
+import Hero from "../../components/details/Hero";
 
 const ArtistDetails = () => {
   const { id } = useParams();
@@ -39,48 +38,14 @@ const ArtistDetails = () => {
   return (
     <div className="outerWrap">
       <div className="app">
-        <div className="main page-background">
+        <div className="main">
           <div className="artist-detail-page">
             <div className="main-inner">
               {artist && (
                 <>
-                  <div className="details-page-info">
-                    <div className="details-info-img">
-                      <img src={artist.imageURL} alt={artist.name} />
-                    </div>
-                    <div className="details-page-content">
-                      <p className="small-textBold">Artist</p>
-                      <h1>{artist.name}</h1>
-                      <p className="small-text">
-                        {artist.description.length > 300
-                          ? `${artist.description.slice(0, 300)}...`
-                          : artist.description}
-                      </p>
-                    </div>
-                  </div>
-
+                  <Hero data={artist} type={"Artist"} />
                   <div className="artist-song">
-                    <div className="icons d-flex align-items-center gap-5 ms-5 mt-3">
-                      <div
-                        style={{
-                          width: "40px",
-                          height: "40px",
-                          borderRadius: "50px",
-                          background: "#1db954",
-                          paddingLeft: "15px",
-                          paddingTop: "8px",
-                        }}
-                      >
-                        <FaPlay />
-                      </div>
-                      <div className="heart-icon">
-                        <CiHeart style={{ fontSize: "40px" }} />
-                      </div>
-                      <div className="dots-icon">
-                        <CiMenuKebab style={{ fontSize: "30px" }} />
-                      </div>
-                    </div>
-
+                    <Icons data={artist} />
                     <div className="main-content">
                       {filteredSongs.length === 0 ? (
                         <p className="no-songs-message text-center">

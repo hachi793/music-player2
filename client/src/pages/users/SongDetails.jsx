@@ -8,12 +8,11 @@ import {
   getSongById,
   saveNewComment,
 } from "../../api";
-import { LuDot } from "react-icons/lu";
 import moment from "moment";
-import { FaHeart, FaPlay } from "react-icons/fa";
-import { CiHeart, CiMenuKebab } from "react-icons/ci";
 import { useStateValue } from "../../context/stateProvider";
 import { actionType } from "../../context/reducer";
+import Icons from "../../components/details/Icons";
+import Hero from "../../components/details/Hero";
 
 const SongDetails = () => {
   const { id } = useParams();
@@ -23,14 +22,15 @@ const SongDetails = () => {
   const [{ user, allUsers }, dispatch] = useStateValue();
   const navigate = useNavigate();
 
+  const fetchSongAndComments = async (id) => {
+    const song = await getSongById(id);
+    setSong(song);
+    const comments = await getCommentsBySongId(id);
+    setComments(comments);
+  };
+
   useEffect(() => {
-    const fetchSongAndComments = async () => {
-      const song = await getSongById(id);
-      setSong(song);
-      const comments = await getCommentsBySongId(id);
-      setComments(comments);
-    };
-    fetchSongAndComments();
+    fetchSongAndComments(id);
   }, [id, dispatch]);
 
   useEffect(() => {
@@ -67,6 +67,7 @@ const SongDetails = () => {
         })
         .finally(() => {
           setContent("");
+          fetchSongAndComments(id);
         });
     } else {
       console.error("Required fields are missing");
@@ -108,54 +109,9 @@ const SongDetails = () => {
             <div className="main-inner">
               {song ? (
                 <>
-                  <div className="details-page-info">
-                    <div className="details-info-img">
-                      <img src={song.imageURL} alt={song.name} />
-                    </div>
-                    <div className="details-page-content">
-                      <div>
-                        <div className="small-textBold">Song</div>
-                        <h1>{song.name}</h1>
-                      </div>
-                      <div className="medium-text">
-                        <span>{song.artistId.name}</span>
-                        <LuDot />
-                        <span>{song.albumId.name}</span>
-                        <LuDot />
-                        <span>
-                          {moment(new Date(song.createdAt)).format("MMM YYYY")}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+                  <Hero data={song} type={"Song"} />
+                  <Icons data={song} />
 
-                  <div className="icons d-flex align-items-center gap-5 ms-4 my-3">
-                    <div
-                      style={{
-                        width: "40px",
-                        height: "40px",
-                        borderRadius: "50px",
-                        background: "#1db954",
-                        paddingLeft: "15px",
-                        paddingTop: "8px",
-                      }}
-                    >
-                      <FaPlay />
-                    </div>
-                    <div className="heart-icon">
-                      {user.favoriteSongs.includes(song._id) ? (
-                        <FaHeart
-                          className="fs-2"
-                          style={{ color: "#0FFF50" }}
-                        />
-                      ) : (
-                        <CiHeart className="fs-3" />
-                      )}
-                    </div>
-                    <div className="dots-icon">
-                      <CiMenuKebab className="fs-3" />
-                    </div>
-                  </div>
                   {/* Artist */}
                   <div
                     className="artist-card d-flex gap-4 mx-4 my-1 p-2"
@@ -267,12 +223,12 @@ const SongDetails = () => {
                                       <p>{comment.content}</p>
                                     </div>
                                     {/* Delete comment option */}
-                                    {commentUser._id === user._id && (
+                                    {/* {commentUser._id === user._id && (
                                       <div className="delete-menu position-relative">
                                         <p>Delete</p>
                                         <p>Cancel</p>
                                       </div>
-                                    )}
+                                    )} */}
                                   </div>
                                 )}
                               </div>

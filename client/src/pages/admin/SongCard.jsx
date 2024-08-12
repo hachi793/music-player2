@@ -1,13 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "../../styles/SongCard.css";
 import { IoTrash } from "react-icons/io5";
 import { deleteObject as deleteStorageObject, ref } from "firebase/storage";
-import {
-  deleteSongById,
-  getAllSongs,
-  getAllArtists,
-  getAllAlbums,
-} from "../../api";
+import { deleteSongById, getAllSongs } from "../../api";
 import { useStateValue } from "../../context/stateProvider";
 import { actionType } from "../../context/reducer";
 import { storage } from "../../config/firebase.config";
@@ -17,10 +12,7 @@ import { useNavigate } from "react-router-dom";
 
 const SongCard = ({ data, index, type }) => {
   const [isDelete, setIsDelete] = useState(false);
-  const [
-    { allArtists, allAlbums, alertType, isSongPlaying, songIndex },
-    dispatch,
-  ] = useStateValue();
+  const [{ isSongPlaying, songIndex }, dispatch] = useStateValue();
 
   const navigate = useNavigate();
 
@@ -84,14 +76,6 @@ const SongCard = ({ data, index, type }) => {
         songIndex: index,
       });
     }
-  };
-
-  const formatDuration = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    const formattedSeconds =
-      remainingSeconds < 10 ? `0${remainingSeconds}` : remainingSeconds;
-    return `${minutes}:${formattedSeconds}`;
   };
 
   return (

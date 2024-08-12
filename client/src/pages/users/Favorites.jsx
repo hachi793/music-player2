@@ -6,7 +6,6 @@ import { FaPlay } from "react-icons/fa";
 import { CiMenuKebab } from "react-icons/ci";
 import { getFavoriteSongs, getAllSongs } from "../../api";
 import { actionType } from "../../context/reducer";
-
 import UserSongCard from "./UserSongCard";
 
 const Favorites = () => {
