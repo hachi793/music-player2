@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 import { useStateValue } from "./context/stateProvider";
 import NavBar from "./components/home/NavBar";
 import Header from "./components/home/Header";
-import MusicPlayer from "./components/users/MusicPlayer";
+import MusicPlayer from "./components/MusicPlayer";
 
 const Layout = () => {
   const [{ isSongPlaying }] = useStateValue();

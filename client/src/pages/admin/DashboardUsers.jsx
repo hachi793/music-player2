@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useStateValue } from "../../context/stateProvider";
 import "../../styles/DashboardUsers.css";
 import { actionType } from "../../context/reducer";
-import { FaSearch } from "react-icons/fa";
 import { getAllUsers } from "../../api";
 import UserCard from "../../components/card/UserCard";
+import Search from "../../components/home/Search";
 
 const DashboardUsers = () => {
   const [{ allUsers }, dispatch] = useStateValue();
-  const [searchTerm, setSearchTerm] = useState("");
+  const [userFilter, setUserFilter] = useState("");
   const [filteredUsers, setFilteredUsers] = useState([]);
 
   const fetchAllUsers = async () => {
@@ -28,7 +28,7 @@ const DashboardUsers = () => {
 
   const handleSearch = (e) => {
     const value = e.target.value;
-    setSearchTerm(value);
+    setUserFilter(value);
 
     if (value === "") {
       setFilteredUsers(allUsers);
@@ -61,15 +61,7 @@ const DashboardUsers = () => {
             <span>Total: </span>
             {allUsers ? allUsers.length : 0}
           </p>
-          <div className="search-bar bg-white d-flex align-items-center rounded-pill mt-0 ms-3">
-            <FaSearch className="text-dark" />
-            <input
-              type="text"
-              placeholder="Search here"
-              value={searchTerm}
-              onChange={handleSearch}
-            />
-          </div>
+          <Search dataFilter={userFilter} handleSearch={handleSearch} />
         </div>
         <div
           className="w-100 d-flex justify-content-between align-items-center fw-semibold"

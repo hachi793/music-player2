@@ -1,36 +1,30 @@
 import React, { useEffect, useState } from "react";
 import "../../styles/UserDetails.css";
-import { useNavigate, useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import {
   deleteUserById,
   getAllSongs,
   getAllUsers,
-  getCommentsByUserId,
   getUserById,
   updateUserRole,
 } from "../../api";
 import { useStateValue } from "../../context/stateProvider";
 import { actionType } from "../../context/reducer";
-import { motion } from "framer-motion";
-import { FaPlay } from "react-icons/fa";
 import moment from "moment";
 import { MdDelete } from "react-icons/md";
+import UserSongCard from "../users/UserSongCard";
+import UserComment from "../../components/comment/UserComment";
 
 const UserDetails = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
-  const [{ user, isSongPlaying, songIndex, allSongs }, dispatch] =
-    useStateValue();
+  const [{ user, allSongs }, dispatch] = useStateValue();
   const [userData, setUserData] = useState(null);
-  const [comments, setComments] = useState([]);
   const [isUserRoleUpdated, setIsUserRoleUpdated] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
       const data = await getUserById(id);
       setUserData(data);
-      const comments = await getCommentsByUserId(id);
-      setComments(comments);
     };
     fetchUser();
   }, [id, dispatch]);
@@ -84,39 +78,11 @@ const UserDetails = () => {
       const deleteUser = await deleteUserById(userData._id);
       if (deleteUser) {
         fetchAllUsers();
+        Navigate("/dashboard/users");
       }
     } catch (err) {
       console.log("Error deleting user: ", err.message);
     }
-  };
-
-  const addToContext = (song, index) => {
-    if (!isSongPlaying) {
-      dispatch({
-        type: actionType.SET_IS_SONG_PLAYING,
-        isSongPlaying: true,
-      });
-    }
-
-    if (songIndex !== index) {
-      dispatch({
-        type: actionType.SET_SONG_INDEX,
-        songIndex: index,
-      });
-    }
-  };
-
-  const formatDuration = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    const formattedSeconds =
-      remainingSeconds < 10 ? `0${remainingSeconds}` : remainingSeconds;
-    return `${minutes}:${formattedSeconds}`;
-  };
-
-  const findSongById = (songId) => {
-    const song = allSongs.find((song) => song._id === songId);
-    return song ? song : null;
   };
 
   return (
@@ -222,112 +188,17 @@ const UserDetails = () => {
                               userData.favoriteSongs?.includes(song._id)
                             )
                             .map((song, index) => (
-                              <motion.div
+                              <UserSongCard
                                 key={song._id}
-                                className="position-relative songcard mx-3 my-2 p-2 "
-                              >
-                                <img
-                                  src={song.imageURL}
-                                  style={{ width: "80px", height: "80px" }}
-                                  alt={`${song.name} cover`}
-                                  className="col-1 rounded-2 me-2"
-                                />
-                                <span className="play-song-icon">
-                                  <FaPlay
-                                    className="m-auto"
-                                    onClick={() => addToContext(song, index)}
-                                  />
-                                </span>
-                                <div className="song-info text-light col-5 d-flex justify-content-between flex-column">
-                                  <p className="fw-bold">{song.name}</p>
-                                  <p
-                                    style={{ color: "#aaa" }}
-                                    className="details-link"
-                                    onClick={() =>
-                                      navigate(
-                                        `/artistDetails/${song.artistId._id}`
-                                      )
-                                    }
-                                  >
-                                    {song.artistId?.name}
-                                  </p>
-                                </div>
-                                <p
-                                  className="col-2 details-link"
-                                  onClick={() =>
-                                    navigate(
-                                      `/albumDetails/${song.albumId._id}`
-                                    )
-                                  }
-                                >
-                                  {song.albumId?.name}
-                                </p>
-                                <p className="col-2">{song.category}</p>
-                                <p className="col-2">
-                                  {formatDuration(song.audioURL?.length || 0)}
-                                </p>
-                              </motion.div>
+                                data={song}
+                                index={index}
+                              />
                             ))}
                       </div>
                     </div>
 
                     {/* Comments */}
-                    <div className="m-4">
-                      <p className="small-text">
-                        All comments of {userData.name} :
-                      </p>
-                      <div className="comments-section mx-3">
-                        {comments &&
-                          comments
-                            .sort(
-                              (a, b) =>
-                                new Date(b.createdAt) - new Date(a.createdAt)
-                            )
-                            .map((comment) => {
-                              const song = findSongById(comment.songId);
-                              return (
-                                <div
-                                  key={comment._id}
-                                  className="comment-item my-3"
-                                >
-                                  {user && (
-                                    <div className="d-flex gap-3 align-items-center">
-                                      <img
-                                        src={song.imageURL}
-                                        style={{
-                                          borderRadius: "50%",
-                                          width: "3rem",
-                                          height: "3rem",
-                                        }}
-                                        alt=""
-                                      />
-                                      <div>
-                                        <p className="small-text d-flex">
-                                          <div
-                                            className="details-link"
-                                            onClick={() =>
-                                              navigate(
-                                                `/songDetails/${song._id}`
-                                              )
-                                            }
-                                          >
-                                            {song.name}
-                                          </div>
-                                          <p className="small-text ms-3">
-                                            {moment(
-                                              new Date(comment.createdAt)
-                                            ).format("YYYY-MM-DD")}
-                                          </p>
-                                        </p>
-                                        <p>{comment.content}</p>
-                                      </div>
-                                    </div>
-                                  )}
-                                </div>
-                              );
-                            })}
-                      </div>
-                    </div>
+                    <UserComment userData={userData} />
                   </>
                 ) : (
                   <div>Loading...</div>

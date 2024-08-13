@@ -5,7 +5,7 @@ import { useStateValue } from "../../context/stateProvider";
 import ArtistCard from "../../components/card/ArtistCard";
 import { NavLink } from "react-router-dom";
 import { IoAdd } from "react-icons/io5";
-import { FaSearch } from "react-icons/fa";
+import Search from "../../components/home/Search";
 
 const DashboardArtists = () => {
   const [{ allArtists }, dispatch] = useStateValue();
@@ -50,15 +50,7 @@ const DashboardArtists = () => {
           <span>Total : </span>
           {allArtists ? allArtists.length : 0}
         </p>
-        <div className="search-bar bg-white d-flex align-items-center rounded-pill mt-0 ms-3">
-          <FaSearch className="text-dark" />
-          <input
-            type="text"
-            placeholder="Search here"
-            value={artistFilter}
-            onChange={handleSearch}
-          />
-        </div>
+        <Search dataFilter={artistFilter} handleSearch={handleSearch} />
       </div>
       <div className="w-100 d-flex flex-wrap gap-2 justify-content-center">
         {filteredArtists &&

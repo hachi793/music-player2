@@ -1,19 +1,19 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import Signup from "./components/users/Signup";
-import Login from "./components/users/Login";
+import Signup from "./pages/users/Signup";
+import Login from "./pages/users/Login";
 import { Routes, Route } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
 import Layout from "./Layout";
 import Home from "./components/home/Home";
-import Music from "./components/music/Music";
-import Premium from "./components/premium/Premium";
+import Music from "./pages/music/Music";
+import Premium from "./pages/premium/Premium";
 import Dashboard from "./pages/admin/Dashboard";
-import UpdateProfile from "./components/users/UpdateProfile";
-import AlbumDetails from "./components/users/AlbumDetails";
-import ArtistDetails from "./components/users/ArtistDetails";
-import Favorites from "./components/users/Favorites";
+import UpdateProfile from "./pages/users/UpdateProfile";
+import AlbumDetails from "./pages/users/AlbumDetails";
+import ArtistDetails from "./pages/users/ArtistDetails";
 import UserDetails from "./pages/admin/UserDetails";
-import SongDetails from "./components/users/SongDetails";
+import SongDetails from "./pages/users/SongDetails";
+import Favorites from "./pages/users/Favorites";
 
 function App() {
   return (

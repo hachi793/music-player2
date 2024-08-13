@@ -4,8 +4,8 @@ import { actionType } from "../../context/reducer";
 import { useStateValue } from "../../context/stateProvider";
 import { NavLink } from "react-router-dom";
 import { IoAdd } from "react-icons/io5";
-import { FaSearch } from "react-icons/fa";
 import AlbumCard from "../../components/card/AlbumCard";
+import Search from "../../components/home/Search";
 
 const DashboardAlbums = () => {
   const [{ allAlbums }, dispatch] = useStateValue();
@@ -51,15 +51,7 @@ const DashboardAlbums = () => {
             <span>Total : </span>
             {allAlbums ? allAlbums.length : 0}
           </p>
-          <div className="search-bar bg-white d-flex align-items-center rounded-pill mt-0 ms-3">
-            <FaSearch className="text-dark" />
-            <input
-              type="text"
-              placeholder="Search here"
-              value={albumFilter}
-              onChange={handleSearch}
-            />
-          </div>
+          <Search dataFilter={albumFilter} handleSearch={handleSearch} />
         </div>
         <div className="d-flex flex-wrap gap-2 justify-content-center ">
           {filteredAlbums && filteredAlbums.length > 0 ? (

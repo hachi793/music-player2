@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { IoAdd } from "react-icons/io5";
-import { FaSearch } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 import { useStateValue } from "../../context/stateProvider";
 import { getAllSongs } from "../../api";
 import { actionType } from "../../context/reducer";
 import SongCard from "../../components/card/SongCard";
+import Search from "../../components/home/Search";
 
 const DashboardSongs = () => {
   const [songFilter, setSongFilter] = useState("");
@@ -49,15 +49,7 @@ const DashboardSongs = () => {
           <span>Total : </span>
           {allSongs ? allSongs.length : 0}
         </p>
-        <div className="search-bar bg-white d-flex align-items-center rounded-pill mt-0 ms-3">
-          <FaSearch className="text-dark" />
-          <input
-            type="text"
-            placeholder="Search here"
-            value={songFilter}
-            onChange={handleSearch}
-          />
-        </div>
+        <Search dataFilter={songFilter} handleSearch={handleSearch} />
       </div>
       {filteredSongs.length === 0 ? (
         <div className="text-center text-light">
