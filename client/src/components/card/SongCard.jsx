@@ -54,7 +54,7 @@ const SongCard = ({ data, index, type }) => {
   };
 
   return (
-    <div className="">
+    <>
       <div className="position-relative songcard mx-3 my-2 p-2 row">
         <img
           src={data.imageURL}
@@ -118,7 +118,7 @@ const SongCard = ({ data, index, type }) => {
           </motion.div>
         )}
       </div>
-    </div>
+    </>
   );
 };
 

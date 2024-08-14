@@ -43,7 +43,7 @@ router.get("/getAll", async (req, res) => {
   }
 });
 
-router.post("/delete/:id", async (req, res) => {
+router.delete("/delete/:id", async (req, res) => {
   const { id } = req.params;
   try {
     const comment = await Comment.findByIdAndDelete(id);

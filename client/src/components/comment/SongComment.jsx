@@ -6,11 +6,13 @@ import {
   getCommentsBySongId,
   saveNewComment,
 } from "../../api";
+import { FaPen } from "react-icons/fa";
 
 const SongComment = ({ song }) => {
   const [comments, setComments] = useState([]);
   const [content, setContent] = useState("");
-  const [{ user, allUsers }, dispatch] = useStateValue();
+  const [{ user }, dispatch] = useStateValue();
+  const [deleteMenu, setDeleteMenu] = useState(false);
 
   const fetchComments = async (id) => {
     const comments = await getCommentsBySongId(id);
@@ -56,14 +58,15 @@ const SongComment = ({ song }) => {
     }
   };
 
-  const handleDeleteComment = async (commentId) => {
+  const handleDeleteComment = async (data) => {
     try {
-      const res = await deleteCommentsById(commentId);
+      const res = await deleteCommentsById(data._id);
       if (res.success) {
         const updatedComments = comments.filter(
-          (comment) => comment._id !== commentId
+          (comment) => comment._id !== data._id
         );
         setComments(updatedComments);
+        setDeleteMenu(false);
       } else {
         console.error("Failed to delete comment: ", res.msg);
       }
@@ -71,14 +74,10 @@ const SongComment = ({ song }) => {
       console.error("Error deleting comment:", error.message);
     }
   };
-  const findUserById = (userId) => {
-    const user = allUsers.find((user) => user._id === userId);
-    return user ? user : null;
-  };
 
   return (
     <section
-      className="comment m-3 p-2 border-5"
+      className="comment mx-3 my-5 p-2 border-5"
       style={{ background: "#252525" }}
     >
       <div className="d-flex gap-3 align-items-center">
@@ -110,44 +109,68 @@ const SongComment = ({ song }) => {
         {comments &&
           comments
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-            .map((comment) => {
-              const commentUser = findUserById(comment.userId);
-              return (
-                <div key={comment._id} className="comment-item my-3">
-                  {commentUser && (
-                    <div className="d-flex gap-3 align-items-center position-relative">
-                      <img
-                        src={commentUser.profileImagePath}
+            .map((comment) => (
+              <div key={comment._id} className="comment-item my-3">
+                {comment.userId && (
+                  <div className="d-flex gap-3 align-items-center position-relative">
+                    <img
+                      src={comment.userId.profileImagePath}
+                      style={{
+                        borderRadius: "50%",
+                        width: "3rem",
+                        height: "3rem",
+                      }}
+                      alt=""
+                    />
+                    <div>
+                      <p className="small-text d-flex gap-3 align-items-center">
+                        {comment.userId.name}
+                        <span className="small-text">
+                          {moment(new Date(comment.createdAt)).format(
+                            "YYYY-MM-DD"
+                          )}
+                        </span>
+                        {comment.userId._id === user._id && (
+                          <FaPen onClick={() => setDeleteMenu(true)} />
+                        )}
+                      </p>
+                      <p>{comment.content}</p>
+                    </div>
+                    {/* Delete comment option */}
+                    {deleteMenu && comment.userId._id === user._id && (
+                      <div
+                        className="delete-menu position-absolute w-25 py-2 px-3 d-flex flex-column justify-content-center align-items-center gap-2"
                         style={{
-                          borderRadius: "50%",
-                          width: "3rem",
-                          height: "3rem",
+                          right: "0%",
+                          top: "10%",
+                          borderRadius: "5px",
+                          transition: "0.5s ease-in-out",
                         }}
-                        alt=""
-                      />
-                      <div>
-                        <p className="small-text">
-                          {commentUser.name}
-                          <span className="small-text ms-3">
-                            {moment(new Date(comment.createdAt)).format(
-                              "YYYY-MM-DD"
-                            )}
-                          </span>
+                      >
+                        <p
+                          className="py-1 px-2 w-100 text-center bg-danger"
+                          style={{
+                            borderRadius: "20px",
+                            cursor: "pointer",
+                          }}
+                          onClick={() => handleDeleteComment(comment)}
+                        >
+                          Delete
                         </p>
-                        <p>{comment.content}</p>
+                        <p
+                          style={{
+                            cursor: "pointer",
+                          }}
+                          onClick={() => setDeleteMenu(false)}
+                        >
+                          Cancel
+                        </p>
                       </div>
-                      {/* Delete comment option */}
-                      {/* {commentUser._id === user._id && (
-                    <div className="delete-menu position-relative">
-                      <p>Delete</p>
-                      <p>Cancel</p>
-                    </div>
-                  )} */}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
       </div>
     </section>
   );

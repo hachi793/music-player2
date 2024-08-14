@@ -13,7 +13,6 @@ import {
 import { actionType } from "../../context/reducer";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import "../../styles/UpdateNewSong.css";
 import UploadImage from "../../components/upload/UploadImage";
 import UploadAudio from "../../components/upload/UploadAudio";
 import SaveButton from "../../components/upload/SaveButton";

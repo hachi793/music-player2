@@ -18,10 +18,6 @@ const UserComment = ({ userData }) => {
     fetchCommentsByUserId(userData._id);
   }, [userData._id, dispatch]);
 
-  const findSongById = (songId) => {
-    const song = allSongs.find((song) => song._id === songId);
-    return song ? song : null;
-  };
   return (
     <div className="m-3 p-3" style={{ background: "#252525" }}>
       <p className="small-text">All comments of {userData.name} :</p>
@@ -30,12 +26,11 @@ const UserComment = ({ userData }) => {
           comments
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
             .map((comment) => {
-              const song = findSongById(comment.songId);
               return (
                 <div key={comment._id} className="comment-item my-3">
                   <div className="d-flex gap-3 align-items-center">
                     <img
-                      src={song.imageURL}
+                      src={comment.songId.imageURL}
                       style={{
                         borderRadius: "50%",
                         width: "3rem",
@@ -47,9 +42,11 @@ const UserComment = ({ userData }) => {
                       <p className="small-text d-flex">
                         <div
                           className="details-link"
-                          onClick={() => navigate(`/songDetails/${song._id}`)}
+                          onClick={() =>
+                            navigate(`/songDetails/${comment.songId._id}`)
+                          }
                         >
-                          {song.name}
+                          {comment.songId.name}
                         </div>
                         <p className="small-text ms-3">
                           {moment(new Date(comment.createdAt)).format(
