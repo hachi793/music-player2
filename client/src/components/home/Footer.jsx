@@ -12,7 +12,7 @@ const Footer = () => {
     <MDBFooter bgColor="dark" className="text-center text-lg-start text-muted">
       <section className=" text-light">
         <MDBContainer className="text-center text-md-start">
-          <MDBRow className="mt-3">
+          <MDBRow className="pt-2">
             <MDBCol md="3" lg="4" xl="3" className="mx-auto mb-4">
               <h6 className="text-uppercase fw-bold mb-4">
                 <MDBIcon icon="gem" className="me-3" />
@@ -95,7 +95,7 @@ const Footer = () => {
       </section>
 
       <div
-        className="text-center p-4"
+        className="text-center p-1"
         style={{ backgroundColor: "rgba(0, 0, 0, 0.05)" }}
       >
         © 2021 Copyright:

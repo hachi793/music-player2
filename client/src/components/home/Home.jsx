@@ -9,12 +9,16 @@ import UserArtistCard from "../../pages/users/UserArtistCard";
 import UserAlbumCard from "../../pages/users/UserAlbumCard";
 import UserSongCard from "../../pages/users/UserSongCard";
 import SeeMore from "../details/SeeMore";
+import Pagination from "./Pagination";
 
 const Home = () => {
   const [{ allArtists, allSongs, allAlbums }, dispatch] = useStateValue();
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [songsPerPage, setSongsPerPage] = useState(5);
 
+  // Fecth data
   useEffect(() => {
     if (!allArtists || allArtists.length === 0) {
       getAllArtists()
@@ -81,6 +85,15 @@ const Home = () => {
   const filteredAlbums = filterResults(allAlbums || [], debouncedSearchTerm);
   const filteredSongs = filterResults(allSongs || [], debouncedSearchTerm);
 
+  // Pagination
+  const indexOfLastPost = currentPage * songsPerPage;
+  const indexOfFirstPost = indexOfLastPost - songsPerPage;
+  const currentSongs = filteredSongs.slice(indexOfFirstPost, indexOfLastPost);
+
+  const handlePagination = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
   return (
     <div
       className="main"
@@ -140,9 +153,15 @@ const Home = () => {
               <SeeMore type={"Song"} />
               <div className="sub-text">What's your taste?</div>
               <div className="d-flex flex-wrap gap-2 w-100">
-                {filteredSongs.map((song, index) => (
+                {currentSongs.map((song, index) => (
                   <UserSongCard key={song._id} data={song} index={index} />
                 ))}
+                <Pagination
+                  length={filteredSongs.length}
+                  songsPerPage={songsPerPage}
+                  handlePagination={handlePagination}
+                  currentPage={currentPage}
+                />
               </div>
             </div>
           )}

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useStateValue } from "../../context/stateProvider";
 import "../../styles/NavBar.css";
 import "../../styles/Favorites.css";
@@ -7,9 +7,12 @@ import { CiMenuKebab } from "react-icons/ci";
 import { getFavoriteSongs, getAllSongs } from "../../api";
 import { actionType } from "../../context/reducer";
 import UserSongCard from "./UserSongCard";
+import Pagination from "../../components/home/Pagination";
 
 const Favorites = () => {
   const [{ allSongs, favoriteSongs, user }, dispatch] = useStateValue();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [songsPerPage] = useState(8);
   useEffect(() => {
     if (!allSongs || allSongs.length === 0) {
       getAllSongs()
@@ -40,6 +43,15 @@ const Favorites = () => {
       fetchFavoriteSongs();
     }
   }, [user, dispatch]);
+
+  // Pagination
+  const indexOfLastPost = currentPage * songsPerPage;
+  const indexOfFirstPost = indexOfLastPost - songsPerPage;
+  const currentSongs = favoriteSongs.slice(indexOfFirstPost, indexOfLastPost);
+
+  const handlePagination = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
   return (
     <div className="outerWrap">
@@ -100,6 +112,12 @@ const Favorites = () => {
                             type={song}
                           />
                         ))}
+                    <Pagination
+                      length={favoriteSongs.length}
+                      songsPerPage={songsPerPage}
+                      handlePagination={handlePagination}
+                      currentPage={currentPage}
+                    />
                   </div>
                 </div>
               </div>

@@ -17,14 +17,14 @@ body {
 }
 
 .navBar {
-  min-width: 35%;
-  height: calc(100vh - 50px);
+  max-width: 20%;
+  height: calc(100% - 50px);
   background: #040404;
   padding: 10px;
   display: flex;
   flex-direction: column;
   z-index: 3;
-  position: relative;
+  position: fixed;
   top: 50px;
 }
 .navBar ul {
@@ -187,4 +187,9 @@ body {
   outline: none;
   margin-left: 10px;
   max-width: 200px;
+}
+.playlist:hover {
+  background-color: #363636;
+  transition: 0.5s ease-in-out;
+  border-radius: 5px;
 }

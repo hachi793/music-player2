@@ -4,6 +4,7 @@ import { useStateValue } from "./context/stateProvider";
 import NavBar from "./components/home/NavBar";
 import Header from "./components/home/Header";
 import MusicPlayer from "./components/MusicPlayer";
+import Footer from "./components/home/Footer";
 
 const Layout = () => {
   const [{ isSongPlaying }] = useStateValue();
@@ -12,11 +13,19 @@ const Layout = () => {
     <div className="position-relative text-light" style={{ minWidth: "680px" }}>
       <Header />
       <div className="d-flex">
-        <div style={{ width: "15%" }}>
+        <div style={{ width: "20%" }}>
           <NavBar />
         </div>
-        <div style={{ width: "85%" }}>
+        <div
+          style={{
+            width: "80%",
+            overflowY: "scroll",
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+          }}
+        >
           <Outlet />
+          <Footer />
         </div>
       </div>
       {isSongPlaying && (

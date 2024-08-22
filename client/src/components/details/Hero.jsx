@@ -9,6 +9,8 @@ const Hero = ({ data, type }) => {
       return "Album";
     } else if (type === "Artist") {
       return "Artist";
+    } else if (type === "Playlist") {
+      return "Playlist";
     }
     return "Song";
   };

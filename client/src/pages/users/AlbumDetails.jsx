@@ -31,12 +31,8 @@ const AlbumDetails = () => {
     }
   }, [allSongs, dispatch]);
 
-  if (!album) {
-    return <div>Loading...</div>;
-  }
-
   const filteredSongs = allSongs
-    ? allSongs.filter((song) => song.albumId.name === album.name)
+    ? allSongs.filter((song) => song.albumId?.name === album?.name)
     : [];
 
   return (

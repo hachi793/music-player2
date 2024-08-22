@@ -113,10 +113,10 @@ const UserSongCard = ({ data, index }) => {
         {data.albumId.name}
       </p>
       <p className="col-2 info">{data.category}</p>
-      <p className="col-2 info">
+      <p className="col-1 info">
         {data.audioURL.length ? formatDuration(data.audioURL.length) : "00:00"}
       </p>
-      <p className="col-">
+      <p className="col-2 text-center">
         {favoriteSongs.includes(data._id) ? (
           <FaHeart
             className="fs-5"

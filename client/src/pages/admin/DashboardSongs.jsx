@@ -6,11 +6,14 @@ import { getAllSongs } from "../../api";
 import { actionType } from "../../context/reducer";
 import SongCard from "../../components/card/SongCard";
 import Search from "../../components/home/Search";
+import Pagination from "../../components/home/Pagination";
 
 const DashboardSongs = () => {
   const [songFilter, setSongFilter] = useState("");
   const [{ allSongs }, dispatch] = useStateValue();
   const [filteredSongs, setFilteredSongs] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [songsPerPage] = useState(8);
   useEffect(() => {
     if (!allSongs || allSongs.length === 0) {
       getAllSongs().then((data) => {
@@ -39,6 +42,15 @@ const DashboardSongs = () => {
     }
   };
 
+  // Pagination
+  const indexOfLastPost = currentPage * songsPerPage;
+  const indexOfFirstPost = indexOfLastPost - songsPerPage;
+  const currentSongs = filteredSongs.slice(indexOfFirstPost, indexOfLastPost);
+
+  const handlePagination = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
   return (
     <div className="w-100 vh-200 d-flex flex-column mx-3">
       <div className="position-relative w-100 my-3 p-3 d-flex align-items-center">
@@ -58,9 +70,15 @@ const DashboardSongs = () => {
       ) : (
         <div className="w-100 flex flex-wrap gap-2 justify-content-evenly align-items-center">
           {filteredSongs &&
-            filteredSongs.map((song, i) => (
+            currentSongs.map((song, i) => (
               <SongCard key={song._id} data={song} index={i} type="song" />
             ))}
+          <Pagination
+            length={filteredSongs.length}
+            songsPerPage={songsPerPage}
+            handlePagination={handlePagination}
+            currentPage={currentPage}
+          />
         </div>
       )}
     </div>

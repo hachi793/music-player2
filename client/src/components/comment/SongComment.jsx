@@ -12,12 +12,13 @@ const SongComment = ({ song }) => {
   const [comments, setComments] = useState([]);
   const [content, setContent] = useState("");
   const [{ user }, dispatch] = useStateValue();
-  const [deleteMenu, setDeleteMenu] = useState(false);
+  const [deleteMenuCommentId, setDeleteMenuCommentId] = useState(null); // Tracks which comment's delete menu is open
 
   const fetchComments = async (id) => {
     const comments = await getCommentsBySongId(id);
     setComments(comments);
   };
+
   useEffect(() => {
     fetchComments(song._id);
   }, [song._id, dispatch]);
@@ -34,7 +35,7 @@ const SongComment = ({ song }) => {
           if (res) {
             getCommentsBySongId(song._id).then((comment) => {
               if (comment) {
-                setComments(...comments, comment);
+                setComments((prevComments) => [...prevComments, comment]);
               } else {
                 console.error("Failed to fetch comments of song");
               }
@@ -66,7 +67,7 @@ const SongComment = ({ song }) => {
           (comment) => comment._id !== data._id
         );
         setComments(updatedComments);
-        setDeleteMenu(false);
+        setDeleteMenuCommentId(null);
       } else {
         console.error("Failed to delete comment: ", res.msg);
       }
@@ -131,13 +132,15 @@ const SongComment = ({ song }) => {
                           )}
                         </span>
                         {comment.userId._id === user._id && (
-                          <FaPen onClick={() => setDeleteMenu(true)} />
+                          <FaPen
+                            onClick={() => setDeleteMenuCommentId(comment._id)}
+                          />
                         )}
                       </p>
                       <p>{comment.content}</p>
                     </div>
                     {/* Delete comment option */}
-                    {deleteMenu && comment.userId._id === user._id && (
+                    {deleteMenuCommentId === comment._id && (
                       <div
                         className="delete-menu position-absolute w-25 py-2 px-3 d-flex flex-column justify-content-center align-items-center gap-2"
                         style={{
@@ -161,7 +164,7 @@ const SongComment = ({ song }) => {
                           style={{
                             cursor: "pointer",
                           }}
-                          onClick={() => setDeleteMenu(false)}
+                          onClick={() => setDeleteMenuCommentId(null)}
                         >
                           Cancel
                         </p>
