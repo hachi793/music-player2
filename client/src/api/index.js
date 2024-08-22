@@ -326,3 +326,66 @@ export const deleteCommentsById = async (id) => {
     console.error("Error deleting comment", error);
   }
 };
+
+// Playlist
+export const addNewPlaylist = async (data) => {
+  try {
+    const res = await axios.post(`${baseURL}playlists/add`, data);
+    return res.data.playlist;
+  } catch (error) {
+    console.error("Error saving new playlist:", error);
+    return null;
+  }
+};
+
+export const getPlaylistById = async (id) => {
+  try {
+    const res = await axios.get(`${baseURL}playlists/getPlaylist/${id}`);
+    return res.data.playlist;
+  } catch (error) {
+    console.error("Error fetching playlist", error);
+    return null;
+  }
+};
+export const getPlaylistsByUserId = async (userId) => {
+  try {
+    const res = await axios.get(
+      `${baseURL}playlists/getPlaylistsByUserId/${userId}`
+    );
+    return res.data.playlists;
+  } catch (error) {
+    console.error("Error geting playlist", error);
+  }
+};
+
+export const addToPlaylist = async (playlistId, songId) => {
+  try {
+    await axios.post(`${baseURL}playlists/addToPlaylist/${playlistId}`, {
+      songId,
+    });
+  } catch (error) {
+    console.error("Error adding song to playlist: ", error);
+    throw error;
+  }
+};
+
+export const removeFromPlaylist = async (playlistId, songId) => {
+  try {
+    await axios.post(`${baseURL}playlists/removeFromPlaylist/${playlistId}`, {
+      songId,
+    });
+  } catch (error) {
+    console.error("Error removing song from playlist: ", error);
+    throw error;
+  }
+};
+
+export const updatePlaylistById = async (id, data) => {
+  try {
+    const res = await axios.put(`${baseURL}playlists/update/${id}`, data);
+    return res.data.playlist;
+  } catch (error) {
+    console.error("Error updating playlist info", error);
+    return null;
+  }
+};
