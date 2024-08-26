@@ -16,7 +16,7 @@ const Home = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
   const [currentPage, setCurrentPage] = useState(1);
-  const [songsPerPage, setSongsPerPage] = useState(5);
+  const [songsPerPage] = useState(5);
 
   // Fecth data
   useEffect(() => {

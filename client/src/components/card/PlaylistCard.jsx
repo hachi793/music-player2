@@ -9,6 +9,7 @@ const PlaylistCard = ({ data, index }) => {
     <div
       className="playlist d-flex gap-2 p-2 m-1"
       onClick={() => navigate(`/playlistDetails/${data._id}`)}
+      style={{ cursor: "pointer" }}
     >
       {data.imageURL ? (
         <img
